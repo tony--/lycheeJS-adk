@@ -1,0 +1,153 @@
+
+#include <fstream>
+
+#include "api.h"
+#include "../v8gl.h"
+
+
+namespace api {
+
+
+	Script::Script(const Script &cpy) {
+	}
+
+
+
+	v8::Handle<v8::FunctionTemplate> Script::generate() {
+
+		v8::Local<v8::FunctionTemplate> tpl = v8::FunctionTemplate::New(handleNew);
+		tpl->SetClassName(v8::String::New("Script"));
+
+		return tpl;
+
+	}
+
+	v8::Handle<v8::Value> Script::handleNew(const v8::Arguments& args) {
+
+		v8::HandleScope scope;
+
+		v8::String::Utf8Value value(args[0]);
+		char* url = *value;
+
+
+		v8::Local<v8::ObjectTemplate> instanceTemplate = v8::ObjectTemplate::New();
+		instanceTemplate->SetInternalFieldCount(1);
+
+		instanceTemplate->Set(v8::String::New("url"), v8::String::New(url));
+		instanceTemplate->Set(v8::String::New("data"), v8::Null());
+
+		instanceTemplate->Set(v8::String::New("load"), v8::FunctionTemplate::New(handleLoad));
+		instanceTemplate->Set(v8::String::New("onload"), v8::FunctionTemplate::New());
+		instanceTemplate->Set(v8::String::New("execute"), v8::FunctionTemplate::New(handleExecute));
+
+		instanceTemplate->Set(v8::String::New("toString"), v8::FunctionTemplate::New(handleToString));
+
+		v8::Local<v8::Object> instance = instanceTemplate->NewInstance();
+
+/*
+		api::Script *script = new Script(url);
+		instance->SetInternalField(0, v8::Integer::New(script->instances.size()));
+		script->instances.push_back(v8::Persistent<v8::Object>::New(instance));
+*/
+
+		return scope.Close(instance);
+
+	}
+
+	v8::Handle<v8::Value> Script::handleToString(const v8::Arguments& args) {
+		return v8::String::New("[object Script]");
+	}
+
+	v8::Handle<v8::Value> Script::handleLoad(const v8::Arguments& args) {
+
+		v8::HandleScope scope;
+		v8::Local<v8::Object> thisObj = args.This();
+
+		if (thisObj.IsEmpty()) {
+			return scope.Close(v8::Null());
+		}
+
+
+		v8::Local<v8::String> property = v8::String::New("data");
+		if (thisObj->Has(property)) {
+
+			// Casting the already set properties via:
+			// v8::Local<v8::String> myProp = thisObj->Get(property)->ToString();
+
+			v8::String::Utf8Value value(thisObj->Get(v8::String::New("url")));
+			char* url = *value;
+
+			char* data = api::Script::load(url);
+			if (data == NULL) {
+				thisObj->Set(property, v8::Null());
+				v8::ThrowException(v8::Exception::Error(v8::String::New("Could not read file.")));
+			} else {
+				thisObj->Set(property, v8::String::New(data));
+			}
+
+			v8::Local<v8::Function> callback = v8::Function::Cast(*thisObj->Get(v8::String::New("onload")));
+			if (!callback.IsEmpty()) {
+				callback->Call(thisObj, 0, NULL);
+			}
+
+		}
+
+
+		return scope.Close(v8::Null());
+
+	}
+
+	char* Script::load(char* filename) {
+
+		FILE* file = fopen(filename, "rb");
+		if (file == NULL) {
+			return NULL;
+		}
+
+
+		fseek(file, 0, SEEK_END);
+		int size = ftell(file);
+		rewind(file);
+
+
+		char* chars = new char[size + 1];
+		chars[size] = '\0';
+
+		for (int i = 0; i < size; ) {
+			int read = static_cast<int>(fread(&chars[i], 1, size - i, file));
+			i += read;
+		}
+
+		fclose(file);
+
+
+		return chars;
+
+	}
+
+	v8::Handle<v8::Value> Script::handleExecute(const v8::Arguments& args) {
+
+		v8::HandleScope scope;
+		v8::Local<v8::Object> thisObj = args.This();
+
+		if (thisObj.IsEmpty()) {
+			return scope.Close(v8::False());
+		}
+
+
+		v8::Local<v8::String> property = v8::String::New("data");
+		if (thisObj->Has(property) && !thisObj->Get(property)->IsNull()) {
+
+			v8::Local<v8::String> data = v8::String::Cast(*thisObj->Get(property));
+			v8::Local<v8::String> url = v8::String::Cast(*thisObj->Get(v8::String::New("url")));
+			return scope.Close(V8GL::execute(data, url));
+
+		}
+
+
+		return scope.Close(v8::False());
+
+	}
+
+}
+

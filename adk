@@ -1,0 +1,466 @@
+#!/bin/bash
+#
+# lycheeJS ADK
+# (App Development Kit)
+#
+# Copyright (c) 2012 by Christoph Martens.
+# Dual Licensed via GPL or lycheeJS-ADK EULA
+#
+# Please see the LICENSE included with this distribution
+# for further details.
+#
+
+DEBUG_MODE=0;
+
+ADK_PATH=$(cd "$(dirname "$0")"; pwd);
+V8_PATH=$ADK_PATH/external/v8;
+
+
+# This is only used in case of issue reporting
+# Please do not remove this, it allows easier debugging of your problem.
+echo -e "" > $ADK_PATH/log;
+echo -e "ADK call: $0 $1 $2 $3 $4" >> $ADK_PATH/log;
+echo -e "Environment: "$(uname -a) >> $ADK_PATH/log;
+echo -e "g++ Version: "$(g++ --version | sed -n 1p) >> $ADK_PATH/log;
+echo -e "\n" >> $ADK_PATH/log;
+
+
+
+usage()
+{
+cat <<EOF
+
+lycheeJS ADK (App Development Kit) 0.1
+
+Recommended development environment: Ubuntu 12.04 64Bit
+
+The ADK allows native platform builds of your JavaScript game using the
+lycheeJS game engine stack. Please follow the guidelines in lycheeJS
+to allow proper builds and avoid futile errors.
+
+
+Usage: $0 <task> [ <options> ]
+
+
+Tasks:
+    help              Shows this help message
+    setup             (Re)Installs all required dependencies and libraries
+    build             Builds an application
+    clean             Cleans all previous builds
+
+
+Build Usage:
+
+$0 build <platform> <path>
+$0 build <platform> <path> --debug
+
+
+<platform> is the targeted platform.
+    all, linux, windows, macosx, android
+
+<path> is the path to your game folder.
+    This folder should include an init.js which initializes the code and should
+    be included in your HTML5 / web build.
+
+	Take a look at the game examples in lycheeJS itself for best practices.
+
+
+Example calls of this script:
+
+$0 setup
+$0 build linux ./external/lycheeJS/game/boilerplate
+$0 clean
+$0 build android ./external/lycheeJS/game/boilerplate
+
+
+EOF
+}
+
+clean() {
+
+	echo -e "\n\n~ ~ ~ clean() ~ ~ ~\n" >> $ADK_PATH/log;
+
+	cd $ADK_PATH;
+
+	if [ -d "./out" ]
+	then
+		rm -rf "./out";
+	fi;
+
+
+}
+
+# $(install_dependencies apt)
+install_dependencies() {
+
+	echo -e "\n\n~ ~ ~ install_dependencies() ~ ~ ~\n" >> $ADK_PATH/log;
+
+	echo -e "\nPackage Manager: $1" >> $ADK_PATH/log;
+
+	cd $ADK_PATH;
+
+	sudo $1 -y install wget build-essential unzip git g++ freeglut3-dev libgl1-mesa-dev libglu1-mesa-dev libpng-dev >> $ADK_PATH/log;
+
+	if [ $? -eq 0 ]
+	then
+		echo 0;
+	else
+		echo $?;
+	fi;
+
+}
+
+# $(install_lychee zip) for library usage
+# $(install_lychee git) for active development
+install_lycheejs() {
+
+	echo -e "\n\n~ ~ ~ install_lychee() ~ ~ ~\n" >> $ADK_PATH/log;
+
+	cd $ADK_PATH;
+
+	if [ -d "external/lycheeJS" ]
+	then
+		rm -rf "external/lycheeJS";
+	fi;
+
+	if [ -d ".temp" ]
+	then
+		rm -rf ".temp";
+	fi;
+ 
+
+
+	# prepare folder structure
+	if [ ! -d "external/lycheeJS" ]
+	then
+		mkdir "external/lycheeJS"
+	fi;
+
+	if [ ! -d ".temp" ]
+	then
+		mkdir ".temp";
+	fi;
+
+
+	if [ "$1" == "zip" ]
+	then
+
+		wget -O .temp/lycheejs.zip https://github.com/martensms/lycheeJS/zipball/master >> $ADK_PATH/log 2>&1;
+		if [ ! "$?" -eq "0" ]; then echo "$?: Could not download zip file (wget)."; return; fi;
+
+		unzip .temp/lycheejs.zip -d $ADK_PATH/.temp >> $ADK_PATH/log;
+		if [ ! "$?" -eq "0" ]; then echo "$?: Could not extract zip file (unzip)."; return; fi;
+
+		mv $ADK_PATH/.temp/martensms-lycheeJS-*/* $ADK_PATH/external/lycheeJS >> $ADK_PATH/log;
+		if [ ! "$?" -eq "0" ]; then echo "$?: Could not move extracted files to external/lycheeJS."; return; fi;
+
+		echo 0;
+
+	elif [ "$1" == "git" ]
+	then
+
+		git clone https://github.com/martensms/lycheeJS.git external/lycheeJS >> $ADK_PATH/log 2>&1;
+		if [ ! "$?" -eq "0" ]; then echo "$?: Could not clone repository (git)."; return; fi;
+
+		echo 0;
+
+	else
+		echo 1;
+	fi;
+
+}
+
+# $(build_v8 x64.release)
+build_v8() {
+
+	echo -e "\n\n~ ~ ~ build_v8() ~ ~ ~\n" >> $ADK_PATH/log;
+
+	cd $V8_PATH && make $1 >> $ADK_PATH/log;
+
+	if [ $? -eq 0 ]
+	then
+		echo 0;
+	else
+		echo $?;
+	fi;
+
+	cd $ADK_PATH;
+
+}
+
+# $(build_v8gl x64.release)
+build_v8gl() {
+
+	echo -e "\n\n~ ~ ~ build_v8gl() ~ ~ ~\n" >> $ADK_PATH/log;
+
+	v8_libs=$V8_PATH/out/$1/obj.target/tools/gyp/libv8_base.a;
+	v8_libs=$v8_libs" "$V8_PATH/out/$1/obj.target/tools/gyp/libv8_snapshot.a;
+
+	build_libs=$v8_libs" -lpthread -lglut -lGLU -lGL -lpng";
+	build_srcs="main.cpp v8gl.cpp api/console.cpp api/script.cpp api/text.cpp api/texture.cpp binding/gl/glbind.cpp binding/glu/glubind.cpp binding/glut/glutbind.cpp";
+
+	if [ $DEBUG_MODE -eq 1 ]
+	then
+		build_command="g++ -g -Wall -I$V8_PATH/include $build_srcs -o out/v8gl $build_libs";
+	else
+		build_command="g++ -Wall -I$V8_PATH/include $build_srcs -o out/v8gl $build_libs";
+	fi;
+
+	echo -e "$build_command" >> $ADK_PATH/log;
+
+	cd $ADK_PATH/v8gl;
+
+	if [ ! -d "./out" ]
+	then
+		mkdir "./out"
+	fi;
+
+
+	echo -e "\n" >> $ADK_PATH/log;
+	$build_command >> $ADK_PATH/log 2>&1;
+
+	if [ $? -eq 0 ]
+	then
+		echo 0;
+	else
+		echo $?;
+	fi;
+
+}
+
+# $(package_game /abs/game/folder /adk/out/linux);
+build_game() {
+
+	echo -e "\n\n~ ~ ~ build_game() ~ ~ ~\n" >> $ADK_PATH/log;
+
+	source_dir=$1;
+	target_dir=$2;
+
+	echo -e "source: $1" >> $ADK_PATH/log;
+	echo -e "target: $2" >> $ADK_PATH/log;
+
+
+	echo 1;
+
+}
+
+
+# $(finish exitcode message)
+finish() {
+
+	if [ $1 -eq 1 ]
+	then
+
+		echo -e "\n\nERROR: It seems as the lycheeJS-ADK had a problem.\n\n";
+		echo -e "If this error occurs though following the guidelines,";
+		echo -e "please report an issue at https://github.com/martensms/lycheeJS-adk/issues";
+		echo -e "and attach the ./log file to it. Thanks!";
+
+	fi;
+
+
+	exit $1;
+
+}
+
+
+case "$1" in
+	help)
+		usage
+		exit
+		;;
+	setup)
+
+		echo -e "\nSetting Up...";
+
+		if [ -f /usr/bin/aptitude ]
+		then
+			apt="/usr/bin/aptitude";
+		elif [ -f /usr/bin/apt-get ]
+		then
+			apt="/usr/bin/apt-get";
+		else
+			apt="";
+		fi;
+
+
+		if [ "$apt" != "" ]
+		then
+
+			echo -e "\n\tInstalling dependencies...";
+
+			success=$(install_dependencies $apt);
+
+			if [ "$success" -eq "0" ]
+			then
+				echo -e "\tdone.";
+			else
+				echo -e "\tfailed (exit code: $success).";
+				finish 1 "$success";
+			fi;
+
+
+
+			echo -e "\n\tInstalling lycheeJS...";
+
+			while [ "$answer" != "yes" -a "$answer" != "no" ]
+			do
+				echo -n -e "\tWARNING: This will undo all modifications in external/lycheeJS. Continue [ yes/no ]? ";
+				read answer;
+			done;
+ 
+			if [ "$answer" == "yes" ]
+			then
+
+				while [ "$answer" != "git" -a "$answer" != "zip" ]
+				do
+					echo -n -e "\tUse git repository (for active development) or download zip file [ git/zip ]? ";
+					read answer;
+				done;
+
+				success=$(install_lycheejs "$answer");
+				if [ "$success" == "0" ]
+				then
+					echo -e "\tdone.";
+				else
+					echo -e "\tfailed (exit code: $success).";
+					finish 1 "$success";
+				fi;
+
+			else
+				echo -e "\tskipped.";
+			fi;
+
+
+
+			echo -e "done.";
+
+		else
+			echo -e "failed (no Ubuntu/Debian environment or aptitude is missing).";
+			exit;
+		fi;
+
+
+
+		exit;
+		;;
+	build)
+
+		if [ "$4" == "--debug" ]
+		then
+			DEBUG_MODE=1;
+		fi;
+
+
+		if [ "$2" == "all" -o "$2" == "linux" ]
+		then
+			GAME_PLATFORM=$2;
+			V8_PLATFORM="x64.release";
+		else
+			echo -e "No valid <platform> given.";
+			exit 1;
+		fi
+
+
+		if [ "$3" != "" -a -d "$3" -a -f "$3/init.js" ]
+		then
+			GAME_PATH=$(cd "$3"; pwd);
+			cd $ADK_PATH;
+		else
+			echo -e "No valid game <path> given.";
+			exit 1;
+		fi;
+
+		GAME_OUT=$ADK_PATH/out/$GAME_PLATFORM;
+
+
+
+		#
+		# BUILD V8
+		#
+
+		echo -e "\nBuilding V8... ($V8_PLATFORM)";
+
+		success=$(build_v8 $V8_PLATFORM);
+
+		if [ "$success" -eq "0" ]
+		then
+			echo -e "done.";
+		else
+			echo -e "failed (exit code: $success).";
+			finish 1 "$success";
+		fi;
+
+
+
+		#
+		# BUILD V8GL
+		#
+
+		echo -e "\nBuilding V8GL... ($V8_PLATFORM)";
+
+		success=$(build_v8gl $V8_PLATFORM);
+
+		if [ "$success" -eq "0" ]
+		then
+			echo -e "done.";
+		else
+			echo -e "failed (exit code: $success).";
+			finish 1 "$success";
+		fi;
+
+
+
+		#
+		# BUILD GAME
+		#
+
+		echo -e "\nBuilding Game... ($GAME_PATH)";
+
+
+# TODO: Remove this when ready.
+echo -e "done. NOTHING TO DO, THIS IS STILL IN DEVELOPMENT.";
+exit;
+
+
+		success=$(build_game $GAME_PATH $GAME_OUT);
+
+		if [ "$success" -eq "0" ]
+		then
+			echo -e "success.";
+		else
+			echo -e "failed (exit code: $success).";
+			finish 1 "$success";
+		fi;
+
+
+
+		exit;
+		;;
+	clean)
+
+
+
+		while [ "$answer" != "yes" -a "$answer" != "no" ]
+		do
+			echo -n -e "\tWARNING: This will remove all previously done builds. Continue [ yes/no ]? ";
+			read answer;
+		done;
+
+		if [ "$answer" == "yes" ]
+		then
+
+			echo -e "\n\tCleaning up...";
+
+		fi;
+
+
+
+		exit;
+		;;
+esac;
+
+
+
+usage;
+

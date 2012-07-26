@@ -1,0 +1,1 @@
+g++ -Iinclude hello_world.cpp -o hello_world out/x64.release/obj.target/tools/gyp/libv8_{base,snapshot}.a -lpthread
