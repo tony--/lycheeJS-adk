@@ -197,24 +197,44 @@ build_v8gl() {
 	v8_libs=$v8_libs" "$V8_PATH/out/$1/obj.target/tools/gyp/libv8_snapshot.a;
 
 	build_libs=$v8_libs" -lpthread -lglut -lGLU -lGL -lpng";
-	build_srcs="main.cpp v8gl.cpp api/console.cpp api/script.cpp api/text.cpp api/texture.cpp binding/gl/glbind.cpp binding/glu/glubind.cpp binding/glut/glutbind.cpp";
+	build_srcs="v8gl/main.cpp v8gl/v8gl.cpp v8gl/api/console.cpp v8gl/api/script.cpp v8gl/api/text.cpp v8gl/api/texture.cpp v8gl/binding/gl/glbind.cpp v8gl/binding/glu/glubind.cpp v8gl/binding/glut/glutbind.cpp";
 
 	if [ $DEBUG_MODE -eq 1 ]
 	then
-		build_command="g++ -g -Wall -I$V8_PATH/include $build_srcs -o out/v8gl $build_libs";
+		build_command="g++ -g -Wall -I$V8_PATH/include $build_srcs -o .temp/v8gl $build_libs";
 	else
-		build_command="g++ -Wall -I$V8_PATH/include $build_srcs -o out/v8gl $build_libs";
+		build_command="g++ -Wall -I$V8_PATH/include $build_srcs -o .temp/v8gl $build_libs";
 	fi;
 
 	echo -e "$build_command" >> $ADK_PATH/log;
 
-	cd $ADK_PATH/v8gl;
+	cd $ADK_PATH;
 
-	if [ ! -d "./out" ]
+	if [ -d ".temp" ]
 	then
-		mkdir "./out"
+		rm -rf ".temp";
 	fi;
 
+
+	# recreate structure
+	if [ ! -d $ADK_PATH/v8gl/lychee ]
+	then
+		mkdir $ADK_PATH/v8gl/lychee;
+	fi;
+
+
+	mkdir ".temp";
+	mkdir ".temp/headers";
+
+
+	# create lycheeJS JavaScript headers
+	cd $ADK_PATH/external/lycheeJS;
+
+	xxd -i "lychee/core.js" "$ADK_PATH/v8gl/lychee/core_js.h";
+	xxd -i "lychee/Builder.js" "$ADK_PATH/v8gl/lychee/Builder_js.h";
+
+
+	cd $ADK_PATH;
 
 	echo -e "\n" >> $ADK_PATH/log;
 	$build_command >> $ADK_PATH/log 2>&1;

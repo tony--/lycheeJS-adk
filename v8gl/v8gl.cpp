@@ -1,6 +1,9 @@
 
 #include "v8gl.h"
 
+// External libraries generated
+#include "lychee/core_js.h"
+#include "lychee/Builder_js.h"
 
 using namespace std;
 
@@ -50,6 +53,10 @@ V8GL::V8GL(int* pargc, char** argv, char* filename) {
 	// This needs to stay here, due to Context::New() requiring an ObjectTemplate.
 	GlFactory::self_ = v8::Persistent<v8::Object>::New(Gl->NewInstance());
 
+
+	// load the lycheeJS core and Builder
+	execute(v8::String::New((char*) lychee_core_js), v8::String::New("built-in/core.js"));
+	execute(v8::String::New((char*) lychee_Builder_js), v8::String::New("built-in/Builder.js"));
 
 
 	char buf[PATH_MAX + 1];
