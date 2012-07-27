@@ -3,5 +3,6 @@
 /external/lycheeJS
 /v8gl/lychee/*
 /log
+/out/*
 /.temp
 

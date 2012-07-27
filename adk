@@ -10,6 +10,8 @@
 # for further details.
 #
 
+
+
 DEBUG_MODE=0;
 
 ADK_PATH=$(cd "$(dirname "$0")"; pwd);
@@ -26,8 +28,8 @@ echo -e "\n" >> $ADK_PATH/log;
 
 
 
-usage()
-{
+usage() {
+
 cat <<EOF
 
 lycheeJS ADK (App Development Kit) 0.1
@@ -74,6 +76,7 @@ $0 build android ./external/lycheeJS/game/boilerplate
 
 
 EOF
+
 }
 
 clean() {
@@ -253,14 +256,58 @@ build_game() {
 
 	echo -e "\n\n~ ~ ~ build_game() ~ ~ ~\n" >> $ADK_PATH/log;
 
-	source_dir=$1;
-	target_dir=$2;
-
-	echo -e "source: $1" >> $ADK_PATH/log;
-	echo -e "target: $2" >> $ADK_PATH/log;
+	game_source=$1;
+	game_target=$2;
 
 
-	echo 1;
+	cd $ADK_PATH;
+
+	# Export the game environment to determine required libraries
+	./.temp/v8gl $game_source/init.js --export-adk > ./.temp/game_env.adk;
+	. ./.temp/game_env.adk;
+
+	declare -A game_bases;
+	declare -A game_tags;
+
+	echo -e "game source: $game_source" >> $ADK_PATH/log;
+	echo -e "game target: $game_target" >> $ADK_PATH/log;
+	echo -e "game environment:" >> $ADK_PATH/log;
+
+	for i in "${!env_bases[@]}"
+	do
+		game_bases[$i]=$(cd $game_source; cd "${env_bases[$i]}"; pwd;);
+		echo -e "\tbase $i: ${game_bases[$i]}" >> $ADK_PATH/log;
+	done;
+
+	for i in "${!env_tags[@]}"
+	do
+		game_tags[$i]="${env_tags[$i]}";
+		echo -e "\ttag $i: ${game_tags[$i]}" >> $ADK_PATH/log;
+	done;
+
+
+	cd $ADK_PATH;
+
+	mkdir -p $game_target;
+
+	for id in "${!game_bases[@]}"
+	do
+		cp -R "${game_bases[$id]}" $game_target/$id;
+	done;
+
+	if [ -d $game_source/asset ]
+	then
+		cp -R $game_source/asset $game_target/asset;
+	fi;
+
+	cp $game_source/init.js $game_target/init.js;
+
+	cp ./.temp/v8gl $game_target/v8gl;
+
+	echo -e "#/!bin/bash\n./v8gl ./init.js" > $game_target/start.sh;
+	chmod +x $game_target/start.sh;
+
+	echo 0;
 
 }
 
@@ -286,8 +333,8 @@ finish() {
 
 case "$1" in
 	help)
-		usage
-		exit
+		usage;
+		exit;
 		;;
 	setup)
 
@@ -436,12 +483,6 @@ case "$1" in
 		#
 
 		echo -e "\nBuilding Game... ($GAME_PATH)";
-
-
-# TODO: Remove this when ready.
-echo -e "done. NOTHING TO DO, THIS IS STILL IN DEVELOPMENT.";
-exit;
-
 
 		success=$(build_game $GAME_PATH $GAME_OUT);
 

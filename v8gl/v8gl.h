@@ -29,7 +29,8 @@ class V8GL {
 
 		static v8::Handle<v8::String> read(char* filename);
 		static v8::Handle<v8::Value> execute(v8::Handle<v8::String> source, v8::Handle<v8::String> filename);
-		static v8::Handle<v8::Value> dump(const v8::Arguments& args);
+		static v8::Handle<v8::Value> exportjson(const v8::Arguments& args);
+		static v8::Handle<v8::Value> exportadk(const v8::Arguments& args);
 		static void reportException(v8::TryCatch* try_catch);
 
 };

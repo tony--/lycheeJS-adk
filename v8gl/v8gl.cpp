@@ -11,6 +11,8 @@ v8::Persistent<v8::Context> V8GL::context_;
 
 V8GL::V8GL(int* pargc, char** argv) {
 
+	int argc = *pargc;
+
 	v8::HandleScope scope;
 
 	v8::Local<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
@@ -57,46 +59,49 @@ V8GL::V8GL(int* pargc, char** argv) {
 	// load the lycheeJS core and Builder
 
 	char buf[PATH_MAX + 1];
+	char *filepath = realpath(argv[1], buf);
 
-	if (strcmp(argv[1], "--dump") == 0) {
+	v8::Handle<v8::String> source = V8GL::read(filepath);
 
-		fprintf(stdout, "(#) dumping: %s\n\n", argv[2]);
+	// v8gl /path/to/init.js --export-json
+	if (argc > 2 && strcmp(argv[2], "--export-json") == 0) {
+
+		// fprintf(stdout, "(#) dumping: %s\n\n", argv[1]);
 
 		execute(v8::String::New((char*) lychee_core_js), v8::String::New("built-in/core.js"));
 
 		v8::Handle<v8::Object> lychee = V8GL::context_->Global()->Get(v8::String::New("lychee"))->ToObject();
-		lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::dump)->GetFunction());
+		lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::exportjson)->GetFunction());
 
-		char *filepath = realpath(argv[2], buf);
 
-		v8::Handle<v8::String> source = V8GL::read(filepath);
-		if (source.IsEmpty()) {
+	// v8gl /path/to/init.js --export-adk
+	} else if (argc > 2 && strcmp(argv[2], "--export-adk") == 0) {
 
-			v8::ThrowException(v8::String::New("Error reading initialization script file."));
+		execute(v8::String::New((char*) lychee_core_js), v8::String::New("built-in/core.js"));
 
-		} else {
-			execute(source, v8::String::New(filepath));
-		}
+		v8::Handle<v8::Object> lychee = V8GL::context_->Global()->Get(v8::String::New("lychee"))->ToObject();
+		lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::exportadk)->GetFunction());
 
+
+	// v8gl /path/to/init.js
 	} else {
+
+		// fprintf(stdout, "(#) executing: %s\n\n", argv[1]);
 
 		execute(v8::String::New((char*) lychee_core_js), v8::String::New("built-in/core.js"));
 		execute(v8::String::New((char*) lychee_Builder_js), v8::String::New("built-in/Builder.js"));
 //		execute(v8::String::New((char*) lychee_Preloader_js), v8::String::New("built-in/Preloader.js"));
 
-		fprintf(stdout, "(#) executing: %s\n\n", argv[1]);
 
-		char *filepath = realpath(argv[1], buf);
+	}
 
-		v8::Handle<v8::String> source = V8GL::read(filepath);
-		if (source.IsEmpty()) {
 
-			v8::ThrowException(v8::String::New("Error reading initialization script file."));
+	if (source.IsEmpty()) {
 
-		} else {
-			execute(source, v8::String::New(filepath));
-		}
+		v8::ThrowException(v8::String::New("Error reading initialization script file."));
 
+	} else {
+		V8GL::execute(source, v8::String::New(filepath));
 	}
 
 }
@@ -172,51 +177,45 @@ v8::Handle<v8::Value> V8GL::execute(v8::Handle<v8::String> source, v8::Handle<v8
 
 }
 
-v8::Handle<v8::Value> V8GL::dump(const v8::Arguments& args) {
+v8::Handle<v8::Value> V8GL::exportjson(const v8::Arguments& args) {
 
-	v8::Local<v8::Object> lychee = V8GL::context_->Global()->Get(v8::String::New("lychee"))->ToObject();
-	v8::Local<v8::Function> callback = v8::Function::Cast(*lychee->Get(v8::String::New("getEnvironment")));
+	v8::Local<v8::Script> script = v8::Script::Compile(v8::String::New("JSON.stringify(lychee.getEnvironment())"), v8::String::New("@runtime"));
+	v8::Handle<v8::Value> result = script->Run();
 
-	if (!callback.IsEmpty()) {
-
-		const v8::Local<v8::Object> env = v8::Object::Cast(*callback->Call(lychee, 0, NULL));
+	fprintf(stdout, "%s", (char*) *(v8::String::Utf8Value(result)));
 
 
-		const v8::Local<v8::Object> bases = v8::Object::Cast(*env->Get(v8::String::New("bases")));
-		const v8::Local<v8::Array> baseprops = bases->GetPropertyNames();
-		const uint32_t bpl = baseprops->Length();
-
-		for (uint32_t bp = 0; bp < bpl; bp++) {
-
-			const v8::Local<v8::Value> key = baseprops->Get(bp);
-			const v8::Local<v8::Value> value = bases->Get(key);
-
-			fprintf(stdout, "(base) %s: %s\n", (char*) *(v8::String::Utf8Value(key)), (char*) *(v8::String::Utf8Value(value)));
-
-		}
-
-
-		const v8::Local<v8::Object> tags = v8::Object::Cast(*env->Get(v8::String::New("tags")));
-		const v8::Local<v8::Array> tagprops = tags->GetPropertyNames();
-		const uint32_t tpl = tagprops->Length();
-
-		for (uint32_t tp = 0; tp < tpl; tp++) {
-
-			const v8::Local<v8::Value> key = tagprops->Get(tp);
-			const v8::Local<v8::Value> value = tags->Get(key);
-
-			fprintf(stdout, "(tag) %s: %s\n", (char*) *(v8::String::Utf8Value(key)), (char*) *(v8::String::Utf8Value(value)));
-
-		}
-
-	}
-
-
-	// FIXME: WTF? If v8::Null() is returned, it lands in the stdout?
-	// Needs to return a v8::Value due to v8::InvocationCallback
 	return v8::String::New("");
 
 }
+
+
+v8::Handle<v8::Value> V8GL::exportadk(const v8::Arguments& args) {
+
+	const char *code = "\
+		var env = lychee.getEnvironment();\
+		\
+		console.log(\"declare -A env_bases;\");\
+		for (var base in env.bases) {\
+			console.log(\"env_bases[\\\"\" + base + \"\\\"]=\\\"\" + env.bases[base] + \"\\\";\");\
+		}\
+		\
+		console.log(\"declare -A env_tags;\");\
+		for (var tag in env.tags) {\
+			console.log(\"env_tags[\\\"\" + tag + \"\\\"]=\\\"\" + env.tags[tag] + \"\\\";\");\
+		}\
+	";
+
+	v8::Local<v8::Script> script = v8::Script::Compile(v8::String::New(code), v8::String::New("@runtime"));
+	v8::Handle<v8::Value> result = script->Run();
+
+
+	return v8::String::New("");
+
+}
+ 
+
+
 
 void V8GL::reportException(v8::TryCatch* try_catch) {
 
