@@ -15,11 +15,7 @@ int main(int argc, char* argv[]) {
 
 	}
 
-
-	char* filename = argv[1];
-	fprintf(stdout, "initializing with: %s\n\n", filename);
-
-	new V8GL(&argc, argv, filename);
+	new V8GL(&argc, argv);
 
 	return 0;
 

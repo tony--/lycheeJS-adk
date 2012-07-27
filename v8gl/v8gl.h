@@ -25,10 +25,11 @@ class V8GL {
 	public:
 		static v8::Persistent<v8::Context> context_;
 
-		V8GL(int* pargc, char** argv, char* filename);
+		V8GL(int* pargc, char** argv);
 
 		static v8::Handle<v8::String> read(char* filename);
 		static v8::Handle<v8::Value> execute(v8::Handle<v8::String> source, v8::Handle<v8::String> filename);
+		static v8::Handle<v8::Value> dump(const v8::Arguments& args);
 		static void reportException(v8::TryCatch* try_catch);
 
 };
