@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <png.h>
 
-#include "api.h"
+#include "texture.h"
 
 #define TEXTURE_LOAD_ERROR 0
 

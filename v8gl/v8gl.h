@@ -15,7 +15,12 @@
 #include "binding/glu/glubind.h"
 #include "binding/glut/glutbind.h"
 
-#include "api/api.h"
+#include "api/console.h"
+#include "api/script.h"
+#include "api/text.h"
+#include "api/texture.h"
+#include "api/timer.h"
+
 
 
 class V8GL {
