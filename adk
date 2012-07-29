@@ -219,18 +219,10 @@ build_v8gl() {
 	fi;
 
 
-	# recreate structure
-	if [ ! -d $ADK_PATH/v8gl/lychee ]
-	then
-		mkdir $ADK_PATH/v8gl/lychee;
-	fi;
-
-
 	mkdir ".temp";
-	mkdir ".temp/headers";
 
 
-	# create lycheeJS JavaScript headers
+	# create @built-in lycheeJS JavaScript headers
 	cd $ADK_PATH/external/lycheeJS;
 
 	xxd -i "lychee/core.js" "$ADK_PATH/v8gl/jsapi/lychee_core_js.h";
