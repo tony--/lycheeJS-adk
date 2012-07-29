@@ -14,6 +14,7 @@
 
 	};
 
+
 	global.clearInterval = function(timer) {
 
 		timer = timer instanceof Timer ? timer : null;
