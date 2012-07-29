@@ -200,7 +200,7 @@ build_v8gl() {
 	v8_libs=$v8_libs" "$V8_PATH/out/$1/obj.target/tools/gyp/libv8_snapshot.a;
 
 	build_libs=$v8_libs" -lpthread -lglut -lGLU -lGL -lpng";
-	build_srcs="v8gl/main.cpp v8gl/v8gl.cpp v8gl/api/console.cpp v8gl/api/script.cpp v8gl/api/text.cpp v8gl/api/texture.cpp v8gl/binding/gl/glbind.cpp v8gl/binding/glu/glubind.cpp v8gl/binding/glut/glutbind.cpp";
+	build_srcs="v8gl/main.cpp v8gl/v8gl.cpp v8gl/api/console.cpp v8gl/api/script.cpp v8gl/api/text.cpp v8gl/api/texture.cpp v8gl/api/timer.cpp v8gl/binding/gl/glbind.cpp v8gl/binding/glu/glubind.cpp v8gl/binding/glut/glutbind.cpp";
 
 	if [ $DEBUG_MODE -eq 1 ]
 	then
@@ -233,8 +233,16 @@ build_v8gl() {
 	# create lycheeJS JavaScript headers
 	cd $ADK_PATH/external/lycheeJS;
 
-	xxd -i "lychee/core.js" "$ADK_PATH/v8gl/lychee/core_js.h";
-	xxd -i "lychee/Builder.js" "$ADK_PATH/v8gl/lychee/Builder_js.h";
+	xxd -i "lychee/core.js" "$ADK_PATH/v8gl/jsapi/lychee_core_js.h";
+	xxd -i "lychee/Builder.js" "$ADK_PATH/v8gl/jsapi/lychee_Builder_js.h";
+
+
+	# create @built-in JavaScript headers
+	cd $ADK_PATH/v8gl;
+
+	xxd -i "jsapi/interval.js" "$ADK_PATH/v8gl/jsapi/interval.h";
+	xxd -i "jsapi/timeout.js" "$ADK_PATH/v8gl/jsapi/timeout.h";
+
 
 
 	cd $ADK_PATH;

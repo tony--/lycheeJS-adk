@@ -1,9 +1,13 @@
 
 #include "v8gl.h"
 
-// External libraries generated
-#include "lychee/core_js.h"
-#include "lychee/Builder_js.h"
+// Advanced @built-in JavaScript headers
+#include "jsapi/interval.h"
+#include "jsapi/timeout.h"
+#include "jsapi/lychee_core_js.h"
+#include "jsapi/lychee_Builder_js.h"
+
+
 
 using namespace std;
 
@@ -27,6 +31,10 @@ V8GL::V8GL(int* pargc, char** argv) {
 
 	// Console API
 	global->Set(v8::String::New("console"), api::Console::generate());
+
+
+	// V8GL API
+	global->Set(v8::String::New("Timer"), api::Timer::generate());
 
 
 	// Advanced Data Types
@@ -56,41 +64,38 @@ V8GL::V8GL(int* pargc, char** argv) {
 	GlFactory::self_ = v8::Persistent<v8::Object>::New(Gl->NewInstance());
 
 
-	// load the lycheeJS core and Builder
-
 	char buf[PATH_MAX + 1];
 	char *filepath = realpath(argv[1], buf);
 
 	v8::Handle<v8::String> source = V8GL::read(filepath);
 
-	// v8gl /path/to/init.js --export-json
+	// EXPORT: v8gl /path/to/init.js --export-json
 	if (argc > 2 && strcmp(argv[2], "--export-json") == 0) {
 
-		// fprintf(stdout, "(#) dumping: %s\n\n", argv[1]);
-
-		execute(v8::String::New((char*) lychee_core_js), v8::String::New("built-in/core.js"));
-
+		execute(v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
 		v8::Handle<v8::Object> lychee = V8GL::context_->Global()->Get(v8::String::New("lychee"))->ToObject();
 		lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::exportjson)->GetFunction());
 
 
-	// v8gl /path/to/init.js --export-adk
+	// EXPORT: v8gl /path/to/init.js --export-adk
 	} else if (argc > 2 && strcmp(argv[2], "--export-adk") == 0) {
 
-		execute(v8::String::New((char*) lychee_core_js), v8::String::New("built-in/core.js"));
-
+		execute(v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
 		v8::Handle<v8::Object> lychee = V8GL::context_->Global()->Get(v8::String::New("lychee"))->ToObject();
 		lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::exportadk)->GetFunction());
 
 
-	// v8gl /path/to/init.js
+	// EXECUTE: v8gl /path/to/init.js
 	} else {
 
-		// fprintf(stdout, "(#) executing: %s\n\n", argv[1]);
+		// @built-in Polyfills for BOM/DOM like behaviours
+		execute(v8::String::New((char*) jsapi_interval_js), v8::String::New("@built-in/interval.js"));
+		execute(v8::String::New((char*) jsapi_timeout_js), v8::String::New("@built-in/timeout.js"));
 
-		execute(v8::String::New((char*) lychee_core_js), v8::String::New("built-in/core.js"));
-		execute(v8::String::New((char*) lychee_Builder_js), v8::String::New("built-in/Builder.js"));
-//		execute(v8::String::New((char*) lychee_Preloader_js), v8::String::New("built-in/Preloader.js"));
+		// @built-in lycheeJS libraries for communication between Engine & ADK and/or V8GL
+		execute(v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
+		execute(v8::String::New((char*) lychee_Builder_js), v8::String::New("@built-in/lychee/Builder.js"));
+//		execute(v8::String::New((char*) lychee_Preloader_js), v8::String::New("@built-in/lychee/Preloader.js"));
 
 
 	}

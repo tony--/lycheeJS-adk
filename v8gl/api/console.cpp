@@ -4,7 +4,6 @@
 
 namespace api {
 
-	// This is apparently here because members of instances can't be used by static methods.
 	int consoleMargin = 0;
 
 	v8::Handle<v8::ObjectTemplate> Console::generate() {
@@ -68,9 +67,6 @@ namespace api {
 	v8::Handle<v8::Value> Console::group(const v8::Arguments& args) {
 
 		fprintf(stdout, "\n");
-
-		// char* label = "new group";
-		// if (args.Length() > 0) {
 
 		v8::String::Utf8Value value(args[0]);
 		char* label = *value;

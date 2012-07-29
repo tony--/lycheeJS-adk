@@ -31,7 +31,7 @@ namespace api {
 
 
 		v8::Local<v8::ObjectTemplate> instanceTemplate = v8::ObjectTemplate::New();
-		instanceTemplate->SetInternalFieldCount(1);
+		instanceTemplate->SetInternalFieldCount(0);
 
 		instanceTemplate->Set(v8::String::New("url"), v8::String::New(url));
 		instanceTemplate->Set(v8::String::New("data"), v8::Null());

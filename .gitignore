@@ -1,7 +1,7 @@
 
 /external/v8/out
 /external/lycheeJS
-/v8gl/lychee/*
+/v8gl/jsapi/*.h
 /log
 /out/*
 /.temp
