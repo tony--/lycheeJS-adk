@@ -3,6 +3,7 @@
 #define API_TIMER_H_
 
 #include <vector>
+#include <ev.h>
 #include <time.h>
 
 #include <v8.h>
@@ -21,7 +22,10 @@ namespace api {
 			V8GLTimer(int delay, bool repeat, v8::Local<v8::Object> instance);
 			~V8GLTimer();
 
+			static void Loop(EV_P_ struct ev_timer *w, int revents);
+
 	};
+
 
 	class Timer {
 

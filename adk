@@ -102,7 +102,7 @@ install_dependencies() {
 
 	cd $ADK_PATH;
 
-	sudo $1 -y install wget build-essential unzip git g++ freeglut3-dev libgl1-mesa-dev libglu1-mesa-dev libpng-dev >> $ADK_PATH/log;
+	sudo $1 -y install wget build-essential unzip git g++ freeglut3-dev libgl1-mesa-dev libglu1-mesa-dev libev-dev libpng-dev >> $ADK_PATH/log;
 
 	if [ $? -eq 0 ]
 	then
@@ -199,7 +199,7 @@ build_v8gl() {
 	v8_libs=$V8_PATH/out/$1/obj.target/tools/gyp/libv8_base.a;
 	v8_libs=$v8_libs" "$V8_PATH/out/$1/obj.target/tools/gyp/libv8_snapshot.a;
 
-	build_libs=$v8_libs" -lpthread -lglut -lGLU -lGL -lpng";
+	build_libs=$v8_libs" -lpthread -lglut -lGLU -lGL -lev -lpng";
 	build_srcs="v8gl/main.cpp v8gl/v8gl.cpp v8gl/api/console.cpp v8gl/api/script.cpp v8gl/api/text.cpp v8gl/api/texture.cpp v8gl/api/timer.cpp v8gl/binding/gl/glbind.cpp v8gl/binding/glu/glubind.cpp v8gl/binding/glut/glutbind.cpp";
 
 	if [ $DEBUG_MODE -eq 1 ]

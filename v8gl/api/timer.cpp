@@ -24,10 +24,26 @@ namespace api {
 
 
 
+	void V8GLTimer::Loop(EV_P_ struct ev_timer *w, int revents) {
+
+fprintf(stdout, "loop...");
+
+	}
+
 
 
 
 	v8::Handle<v8::FunctionTemplate> Timer::generate() {
+
+		// Initialize the ev loop with 60fps
+		struct ev_loop *loop = ev_default_loop(0);
+
+		ev_timer timeout_watcher;
+		ev_timer_init(&timeout_watcher, api::V8GLTimer::Loop, 0, 1.0 / 60);
+		ev_timer_start(loop, &timeout_watcher);
+
+		ev_loop(loop, 0);
+
 
 		v8::Local<v8::FunctionTemplate> tpl = v8::FunctionTemplate::New(handleNew);
 		tpl->SetClassName(v8::String::New("Timer"));
