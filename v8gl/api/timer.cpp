@@ -4,28 +4,26 @@
 
 namespace api {
 
-	Timer::Timer(int delay, bool repeat, v8::Local<v8::Object> instance) {
+	std::vector<api::V8GLTimer> activeV8GLTimers_;
 
-		_id = activeTimers_.size();
+	V8GLTimer::V8GLTimer(int delay, bool repeat, v8::Local<v8::Object> instance) {
+
+		_id = activeV8GLTimers_.size();
 
 		_start = time(NULL);
-		_delay = (int) delay;
-		_repeat = (bool) repeat;
-		_instance = instance;
+		_delay = delay;
+		_repeat = repeat;
 
-		activeTimers_.push_back(this);
-
-	}
-
-	Timer::~Timer() {
-
-		api::Timer *_self = activeTimers_.at(_id);
-
-		_self._instance.Dispose();
-
-		activeTimers_.erase(activeTimers_.begin() + _id);
+		activeV8GLTimers_.push_back(*this);
 
 	}
+
+	V8GLTimer::~V8GLTimer() {
+		activeV8GLTimers_.erase(activeV8GLTimers_.begin() + _id);
+	}
+
+
+
 
 
 
@@ -38,10 +36,20 @@ namespace api {
 
 	}
 
-	// new Timer(callback, delay, 'timeout' || 'interval');
+	// new Timer(callback, int delay, bool repeat);
 	v8::Handle<v8::Value> Timer::handleNew(const v8::Arguments& args) {
 
 		v8::HandleScope scope;
+
+		v8::Local<v8::Function> callback = v8::Function::Cast(*args[0]);
+		int delay = args[1]->IntegerValue();
+		bool repeat = args[2]->BooleanValue();
+
+		if (callback.IsEmpty()) {
+			callback = v8::FunctionTemplate::New()->GetFunction();
+		}
+
+		
 
 		v8::Local<v8::ObjectTemplate> instanceTemplate = v8::ObjectTemplate::New();
 		instanceTemplate->SetInternalFieldCount(0);
@@ -52,9 +60,10 @@ namespace api {
 
 		v8::Local<v8::Object> instance = instanceTemplate->NewInstance();
 
-		api::Timer timer = new api::Timer(delay, repeat, instance);
+		api::V8GLTimer* timer = new api::V8GLTimer(delay, repeat, instance);
 
-		instance->Set(v8::String::New("id"), v8::Number::New(timer.id));
+		instance->Set(v8::String::New("id"), v8::Number::New(timer->_id));
+		instance->Set(v8::String::New("oncall"), callback);
 
 
 		// return the timer;

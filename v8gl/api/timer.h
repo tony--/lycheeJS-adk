@@ -9,21 +9,27 @@
 
 namespace api {
 
-	class Timer {
-
-		private:
+	class V8GLTimer {
 
 		public:
-
 			int _id;
 			time_t _start;
 			int _delay;
 			bool _repeat;
 			v8::Local<v8::Object> _instance;
 
-			Timer(int delay, bool repeat, v8::Local<v8::Object> instance);
-			~Timer();
+			V8GLTimer(int delay, bool repeat, v8::Local<v8::Object> instance);
+			~V8GLTimer();
 
+	};
+
+	class Timer {
+
+		private:
+
+		public:
+
+			Timer(const api::Timer &cpy);
 
 			static v8::Handle<v8::Value> handleNew(const v8::Arguments& args);
 
@@ -32,8 +38,6 @@ namespace api {
 			static v8::Handle<v8::FunctionTemplate> generate(void);
 
 	};
-
-	std::vector<api::Timer *> activeTimers_;
 
 };
 

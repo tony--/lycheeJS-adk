@@ -35,7 +35,7 @@ V8GL::V8GL(int* pargc, char** argv) {
 
 
 	// V8GL API
-//	global->Set(v8::String::New("Timer"), api::Timer::generate());
+	global->Set(v8::String::New("Timer"), api::Timer::generate());
 
 
 	// Advanced Data Types
