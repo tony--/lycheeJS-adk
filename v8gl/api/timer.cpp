@@ -4,7 +4,7 @@
 
 namespace api {
 
-	std::vector<api::V8GLTimer> activeV8GLTimers_;
+	std::vector<api::V8GLTimer *> activeV8GLTimers_;
 
 	V8GLTimer::V8GLTimer(int delay, bool repeat, v8::Local<v8::Object> instance) {
 
@@ -14,7 +14,7 @@ namespace api {
 		_delay = delay;
 		_repeat = repeat;
 
-		activeV8GLTimers_.push_back(*this);
+		activeV8GLTimers_.push_back(this);
 
 	}
 
