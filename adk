@@ -227,6 +227,7 @@ build_v8gl() {
 
 	xxd -i "lychee/core.js" "$ADK_PATH/v8gl/jsapi/lychee_core_js.h";
 	xxd -i "lychee/Builder.js" "$ADK_PATH/v8gl/jsapi/lychee_Builder_js.h";
+	xxd -i "lychee/platform/v8gl/Preloader.js" "$ADK_PATH/v8gl/jsapi/lychee_Preloader_js.h";
 
 
 	# create @built-in JavaScript headers

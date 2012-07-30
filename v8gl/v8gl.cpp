@@ -6,6 +6,7 @@
 #include "jsapi/timeout.h"
 #include "jsapi/lychee_core_js.h"
 #include "jsapi/lychee_Builder_js.h"
+#include "jsapi/lychee_Preloader_js.h"
 
 
 
@@ -34,7 +35,7 @@ V8GL::V8GL(int* pargc, char** argv) {
 
 
 	// V8GL API
-	global->Set(v8::String::New("Timer"), api::Timer::generate());
+//	global->Set(v8::String::New("Timer"), api::Timer::generate());
 
 
 	// Advanced Data Types
@@ -95,8 +96,7 @@ V8GL::V8GL(int* pargc, char** argv) {
 		// @built-in lycheeJS libraries for communication between Engine & ADK and/or V8GL
 		execute(v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
 		execute(v8::String::New((char*) lychee_Builder_js), v8::String::New("@built-in/lychee/Builder.js"));
-//		execute(v8::String::New((char*) lychee_Preloader_js), v8::String::New("@built-in/lychee/Preloader.js"));
-
+		execute(v8::String::New((char*) lychee_platform_v8gl_Preloader_js), v8::String::New("@built-in/lychee/platform/v8gl/Preloader.js"));
 
 	}
 

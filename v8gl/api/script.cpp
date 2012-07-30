@@ -33,9 +33,6 @@ namespace api {
 		v8::Local<v8::ObjectTemplate> instanceTemplate = v8::ObjectTemplate::New();
 		instanceTemplate->SetInternalFieldCount(0);
 
-		instanceTemplate->Set(v8::String::New("url"), v8::String::New(url));
-		instanceTemplate->Set(v8::String::New("data"), v8::Null());
-
 		instanceTemplate->Set(v8::String::New("load"), v8::FunctionTemplate::New(handleLoad));
 		instanceTemplate->Set(v8::String::New("onload"), v8::FunctionTemplate::New());
 		instanceTemplate->Set(v8::String::New("execute"), v8::FunctionTemplate::New(handleExecute));
@@ -44,11 +41,9 @@ namespace api {
 
 		v8::Local<v8::Object> instance = instanceTemplate->NewInstance();
 
-/*
-		api::Script *script = new Script(url);
-		instance->SetInternalField(0, v8::Integer::New(script->instances.size()));
-		script->instances.push_back(v8::Persistent<v8::Object>::New(instance));
-*/
+		instance->Set(v8::String::New("url"), v8::String::New(url));
+		instance->Set(v8::String::New("data"), v8::Null());
+
 
 		return scope.Close(instance);
 

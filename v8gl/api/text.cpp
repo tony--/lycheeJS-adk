@@ -2,7 +2,6 @@
 #include <fstream>
 
 #include "text.h"
-#include "../v8gl.h"
 
 
 namespace api {

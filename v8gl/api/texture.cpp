@@ -7,6 +7,7 @@
 
 #define TEXTURE_LOAD_ERROR 0
 
+
 namespace api {
 
 
