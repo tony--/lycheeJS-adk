@@ -7,6 +7,13 @@
 
 #define TEXTURE_LOAD_ERROR 0
 
+#ifdef __APPLE__
+	#include <OpenGL/OpenGL.h>
+#else
+	#define GL_GLEXT_PROTOTYPES
+	#include <GL/gl.h>
+#endif
+ 
 
 namespace api {
 

@@ -3,7 +3,14 @@
 #define API_TEXTURE_H_
 
 #include <v8.h>
-#include "../v8gl.h"
+
+#ifdef __APPLE__
+	#include <OpenGL/OpenGL.h>
+#else
+	#define GL_GLEXT_PROTOTYPES
+	#include <GL/gl.h>
+#endif
+
 
 namespace api {
 

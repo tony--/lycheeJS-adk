@@ -3,7 +3,7 @@
 #define API_TEXT_H_
 
 #include <v8.h>
-#include "../v8gl.h"
+
 
 namespace api {
 

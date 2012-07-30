@@ -1,6 +1,15 @@
 
 #include "glubind.h"
 
+#ifdef __APPLE__
+	#include <OpenGL/OpenGL.h>
+	#include <GLUT/glu.h>
+#else
+	#include <GL/glu.h>
+#endif
+
+#include <stdio.h>
+
 
 v8::Handle<v8::Value> GetGLU_EXT_object_space_tess(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 	return v8::Uint32::New(GLU_EXT_object_space_tess);
