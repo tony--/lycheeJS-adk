@@ -11,10 +11,20 @@
 
 		var instance = new Text("/var/www/lycheeJS-adk/v8gl/test/api/text.js");
 
+		console.log("instance.toString(): " + instance.toString());
 		console.log("instance.url: " + instance.url);
 		console.log("instance.data: " + instance.data);
+		console.log("instance.load.toString(): " + instance.load.toString());
 		console.log("instance.onload.toString(): " + instance.onload.toString());
-		console.log("instance.toString(): " + instance.toString());
+
+		// Ignored
+		instance.load = function() {};
+
+		// Allowed
+		instance.onload = function() {};
+
+		console.log("instance.load.toString(): " + instance.load.toString());
+		console.log("instance.onload.toString(): " + instance.onload.toString());
 
 	console.groupEnd();
 

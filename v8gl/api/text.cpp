@@ -25,6 +25,14 @@ namespace api {
 
 		v8::HandleScope scope;
 
+		if (!args.IsConstructCall()) {
+			return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("V8GL object constructor cannot be called as a function."))));
+		}
+
+		if (args.Length() != 1) {
+			return scope.Close(v8::ThrowException(v8::Exception::SyntaxError(v8::String::New("Usage: new Text(String url)"))));
+		}
+
 		v8::String::Utf8Value value(args[0]);
 		char* url = *value;
 
@@ -32,13 +40,13 @@ namespace api {
 		v8::Local<v8::ObjectTemplate> instanceTemplate = v8::ObjectTemplate::New();
 		instanceTemplate->SetInternalFieldCount(0);
 
-		instanceTemplate->Set(v8::String::New("url"), v8::String::New(url));
-		instanceTemplate->Set(v8::String::New("data"), v8::Null());
+		instanceTemplate->Set(v8::String::New("url"), v8::String::New(url), v8::ReadOnly);
+		instanceTemplate->Set(v8::String::New("data"), v8::Null(), v8::ReadOnly);
 
-		instanceTemplate->Set(v8::String::New("load"), v8::FunctionTemplate::New(handleLoad));
+		instanceTemplate->Set(v8::String::New("load"), v8::FunctionTemplate::New(handleLoad), v8::ReadOnly);
 		instanceTemplate->Set(v8::String::New("onload"), v8::FunctionTemplate::New());
 
-		instanceTemplate->Set(v8::String::New("toString"), v8::FunctionTemplate::New(handleToString));
+		instanceTemplate->Set(v8::String::New("toString"), v8::FunctionTemplate::New(handleToString), v8::ReadOnly);
 
 		v8::Local<v8::Object> instance = instanceTemplate->NewInstance();
 
@@ -69,10 +77,10 @@ namespace api {
 
 			char* data = api::Text::load(url);
 			if (data == NULL) {
-				thisObj->Set(property, v8::Null());
+				thisObj->Set(property, v8::Null(), v8::ReadOnly);
 				v8::ThrowException(v8::Exception::Error(v8::String::New("Could not read file.")));
 			} else {
-				thisObj->Set(property, v8::String::New(data));
+				thisObj->Set(property, v8::String::New(data), v8::ReadOnly);
 			}
 
 			v8::Local<v8::Function> callback = v8::Function::Cast(*thisObj->Get(v8::String::New("onload")));

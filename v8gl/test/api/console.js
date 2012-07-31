@@ -16,6 +16,12 @@
 
 	console.groupEnd();
 
+	console.debug({
+		foo: 'bar',
+		bar: function() {}, // This has to be stripped out
+		dum: 123123
+	});
+
 	console.log('This is the last Log!');
 
 })(this);

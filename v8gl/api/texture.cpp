@@ -43,15 +43,15 @@ namespace api {
 		v8::Local<v8::ObjectTemplate> instanceTemplate = v8::ObjectTemplate::New();
 		instanceTemplate->SetInternalFieldCount(0);
 
-		instanceTemplate->Set(v8::String::New("url"), v8::String::New(url));
-		instanceTemplate->Set(v8::String::New("id"), v8::Null());
-		instanceTemplate->Set(v8::String::New("width"), v8::Null());
-		instanceTemplate->Set(v8::String::New("height"), v8::Null());
+		instanceTemplate->Set(v8::String::New("url"), v8::String::New(url), v8::ReadOnly);
+		instanceTemplate->Set(v8::String::New("id"), v8::Null(), v8::ReadOnly);
+		instanceTemplate->Set(v8::String::New("width"), v8::Null(), v8::ReadOnly);
+		instanceTemplate->Set(v8::String::New("height"), v8::Null(), v8::ReadOnly);
 
-		instanceTemplate->Set(v8::String::New("load"), v8::FunctionTemplate::New(handleLoad));
+		instanceTemplate->Set(v8::String::New("load"), v8::FunctionTemplate::New(handleLoad), v8::ReadOnly);
 		instanceTemplate->Set(v8::String::New("onload"), v8::FunctionTemplate::New());
 
-		instanceTemplate->Set(v8::String::New("toString"), v8::FunctionTemplate::New(handleToString));
+		instanceTemplate->Set(v8::String::New("toString"), v8::FunctionTemplate::New(handleToString), v8::ReadOnly);
 
 		v8::Local<v8::Object> instance = instanceTemplate->NewInstance();
 
@@ -84,9 +84,9 @@ namespace api {
 
 			GLuint id = api::Texture::load(url, width, height);
 
-			thisObj->Set(property, v8::Integer::New(id));
-			thisObj->Set(v8::String::New("width"), v8::Integer::New(width));
-			thisObj->Set(v8::String::New("height"), v8::Integer::New(height));
+			thisObj->Set(property, v8::Integer::New(id), v8::ReadOnly);
+			thisObj->Set(v8::String::New("width"), v8::Integer::New(width), v8::ReadOnly);
+			thisObj->Set(v8::String::New("height"), v8::Integer::New(height), v8::ReadOnly);
 
 
 //			thisObj->SetPointerInInternalField(0, &texture);
