@@ -949,37 +949,6 @@ v8::Handle<v8::Value> GLUTWarpPointerCallback(const v8::Arguments& args) {
 
 
 
-
-v8::Persistent<v8::Function> persistentWMCloseFunc;
-
-void funcWMCloseFunc ( ) {
-
-	v8::HandleScope scope;
-	v8::Handle<v8::Value> valueArr[0];
-	v8::TryCatch try_catch;
-
-	v8::Handle<v8::Value> result = persistentWMCloseFunc->Call(GlutFactory::context_->Global(), 0, valueArr);
-	if (result.IsEmpty()) {
-		v8::String::Utf8Value error(try_catch.Exception());
-		fprintf(stderr, "Exception in WMCloseFunc: %s\n", *error);
-	}
-}
-
-v8::Handle<v8::Value> GLUTWMCloseFuncCallback(const v8::Arguments& args) {
-
-	if (args.Length() < 1 || !args[0]->IsFunction()) return v8::Undefined();
-
-#if (GLUT_MACOSX_IMPLEMENTATION >= 2)
-	persistentWMCloseFunc.Dispose();
-	v8::Handle<v8::Function> value0 = v8::Handle<v8::Function>::Cast(args[0]);
-	persistentWMCloseFunc = v8::Persistent<v8::Function>::New(value0);
-
-	glutWMCloseFunc((void (*)(void)) funcWMCloseFunc);
-#endif
-
-	return v8::Undefined();
-}
-
 v8::Handle<v8::Value> GLUTCheckLoopCallback(const v8::Arguments& args) {
 
 	if (args.Length() < 0) return v8::Undefined();
@@ -1199,7 +1168,7 @@ void funcDisplayFunc () {
 	v8::Handle<v8::Value> valueArr[0];
 	v8::TryCatch try_catch;
 
-	v8::Handle<v8::Value> result = persistentDisplayFunc->Call(GlutFactory::context_->Global(), 0, valueArr);
+	v8::Handle<v8::Value> result = persistentDisplayFunc->Call(persistentDisplayFunc->CreationContext()->Global(), 0, valueArr);
 	if (result.IsEmpty()) {
 		v8::String::Utf8Value error(try_catch.Exception());
 		fprintf(stderr, "Exception in DisplayFunc: %s\n", *error);
@@ -3060,8 +3029,6 @@ v8::Handle<v8::ObjectTemplate> GlutFactory::createGlut(int* pargc, char** argv) 
      Glut->Set(v8::String::NewSymbol("setCursor"), v8::FunctionTemplate::New(GLUTSetCursorCallback));
 
      Glut->Set(v8::String::NewSymbol("warpPointer"), v8::FunctionTemplate::New(GLUTWarpPointerCallback));
-
-     Glut->Set(v8::String::NewSymbol("wMCloseFunc"), v8::FunctionTemplate::New(GLUTWMCloseFuncCallback));
 
      Glut->Set(v8::String::NewSymbol("checkLoop"), v8::FunctionTemplate::New(GLUTCheckLoopCallback));
 

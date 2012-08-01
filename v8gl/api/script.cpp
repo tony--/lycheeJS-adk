@@ -135,7 +135,7 @@ namespace api {
 
 			v8::Local<v8::String> data = v8::String::Cast(*thisObj->Get(property));
 			v8::Local<v8::String> url = v8::String::Cast(*thisObj->Get(v8::String::New("url")));
-			return scope.Close(v8gl::V8GL::execute(data, url));
+//			return scope.Close(v8gl::V8GL::execute(data, url));
 
 		}
 

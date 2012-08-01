@@ -7,17 +7,16 @@
 
 namespace v8gl {
 
-	static v8::Persistent<v8::Context> context;
-
 	class V8GL {
 
 		private:
 
 		public:
 
-			static void initialize(int* pargc, char** argv);
+			static v8::Persistent<v8::Context> initialize(int* pargc, char** argv);
+			static bool dispatch(v8::Handle<v8::Context>, char* what);
 
-			static v8::Handle<v8::Value> execute(v8::Handle<v8::String> source, v8::Handle<v8::String> filename);
+			static v8::Handle<v8::Value> execute(v8::Handle<v8::Context> context, v8::Handle<v8::String> source, v8::Handle<v8::String> filename);
 			static v8::Handle<v8::Value> handleExportADK(const v8::Arguments& args);
 			static v8::Handle<v8::Value> handleExportJSON(const v8::Arguments& args);
 

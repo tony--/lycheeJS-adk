@@ -26,16 +26,9 @@
 
 namespace v8gl {
 
-//	v8::Persistent<v8::Context> context;
-
-	void V8GL::initialize(int* pargc, char** argv) {
-
-		int argc = *pargc;
-
-		v8::HandleScope scope;
+	v8::Persistent<v8::Context> V8GL::initialize(int* pargc, char** argv) {
 
 		v8::Local<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
-
 
 		// GL/GLU/GLUT Bindings
 		v8::Handle<v8::ObjectTemplate> Gl = GlFactory::createGl();
@@ -46,10 +39,6 @@ namespace v8gl {
 
 		// Console API
 		global->Set(v8::String::New("console"), api::Console::generate());
-
-
-		// V8GL API
-//		global->Set(v8::String::New("Timer"), api::Timer::generate());
 
 
 		// Advanced Data Types
@@ -67,74 +56,89 @@ namespace v8gl {
 		global->Set(v8::String::New("navigator"), navigator);
 
 
-		// Context Stuff
-		v8::Handle<v8::Context> context = v8::Context::New(NULL, global);
+		v8::Persistent<v8::Context> context = v8::Context::New(NULL, global);
 
-		v8gl::context = v8::Persistent<v8::Context>::New(context);
-		GlutFactory::context_ = v8gl::context;
+// FIXME: This crap needs to be all removed.
+// All GL, GLU and GLUT Factories have to be class instances
+// being dispatched on a targeted context
 
-		v8::Context::Scope context_scope(context);
+		GlutFactory::context_ = v8::Persistent<v8::Context>::New(context);
 
-		// This needs to stay here, due to Context::New() requiring an ObjectTemplate.
+		v8::HandleScope scope;
+		context->Enter();
 		GlFactory::self_ = v8::Persistent<v8::Object>::New(Gl->NewInstance());
+		context->Exit();
+
+// END of removal
 
 
-		// EXPORT: v8gl /path/to/init.js --export-json
-		if (argc > 2 && strcmp(argv[2], "--export-json") == 0) {
-
-			execute(v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
-			v8::Handle<v8::Object> lychee = v8gl::context->Global()->Get(v8::String::New("lychee"))->ToObject();
-			lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::handleExportJSON)->GetFunction());
-
-
-		// EXPORT: v8gl /path/to/init.js --export-adk
-		} else if (argc > 2 && strcmp(argv[2], "--export-adk") == 0) {
-
-			execute(v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
-			v8::Handle<v8::Object> lychee = v8gl::context->Global()->Get(v8::String::New("lychee"))->ToObject();
-			lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::handleExportADK)->GetFunction());
-
-
-		// EXECUTE: v8gl /path/to/init.js
-		} else {
-
-			// @built-in Polyfills for BOM/DOM like behaviours
-			execute(v8::String::New((char*) jsapi_interval_js), v8::String::New("@built-in/interval.js"));
-			execute(v8::String::New((char*) jsapi_timeout_js), v8::String::New("@built-in/timeout.js"));
-
-			// @built-in lycheeJS libraries for communication between Engine & ADK and/or V8GL
-			execute(v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
-			execute(v8::String::New((char*) lychee_Builder_js), v8::String::New("@built-in/lychee/Builder.js"));
-			execute(v8::String::New((char*) lychee_platform_v8gl_Preloader_js), v8::String::New("@built-in/lychee/platform/v8gl/Preloader.js"));
-
-		}
-
-
-		char buf[PATH_MAX + 1];
-		char *filepath = realpath(argv[1], buf);
-
-		char* rawsource = V8GL::read(filepath);
-		v8::Local<v8::String> source = v8::String::New(rawsource);
-
-		if (source.IsEmpty()) {
-			v8::ThrowException(v8::String::New("Error reading initialization script file."));
-		} else {
-			V8GL::execute(source, v8::String::New(filepath));
-		}
+		return context;
 
 	}
 
 
-	v8::Handle<v8::Value> V8GL::execute(v8::Handle<v8::String> source, v8::Handle<v8::String> filename) {
+	bool V8GL::dispatch(v8::Handle<v8::Context> context, char* what) {
+
+		if (strcmp(what, "export-adk") == 0) {
+
+			execute(context, v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
+
+			context->Enter();
+
+			v8::Handle<v8::Object> lychee = context->Global()->Get(v8::String::New("lychee"))->ToObject();
+			lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::handleExportADK)->GetFunction());
+
+			context->Exit();
+
+			return true;
+
+		} else if (strcmp(what, "export-json") == 0) {
+
+			execute(context, v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
+
+			context->Enter();
+
+			v8::Handle<v8::Object> lychee = context->Global()->Get(v8::String::New("lychee"))->ToObject();
+			lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::handleExportJSON)->GetFunction());
+
+			context->Exit();
+
+			return true;
+
+		} else if (strcmp(what, "lycheeJS") == 0) {
+
+			// @built-in Polyfills for BOM/DOM like behaviours
+			execute(context, v8::String::New((char*) jsapi_interval_js), v8::String::New("@built-in/interval.js"));
+			execute(context, v8::String::New((char*) jsapi_timeout_js), v8::String::New("@built-in/timeout.js"));
+
+			// @built-in lycheeJS libraries for communication between Engine & ADK and/or V8GL
+			execute(context, v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
+			execute(context, v8::String::New((char*) lychee_Builder_js), v8::String::New("@built-in/lychee/Builder.js"));
+			execute(context, v8::String::New((char*) lychee_platform_v8gl_Preloader_js), v8::String::New("@built-in/lychee/platform/v8gl/Preloader.js"));
+
+			return true;
+
+		}
+
+		return false;
+
+	}
+
+
+
+	v8::Handle<v8::Value> V8GL::execute(v8::Handle<v8::Context> context, v8::Handle<v8::String> source, v8::Handle<v8::String> filename) {
+
+		context->Enter();
 
 		v8::HandleScope scope;
 		v8::TryCatch try_catch;
 
 		v8::Local<v8::Script> script = v8::Script::Compile(source, filename);
+		v8::Handle<v8::Value> value;
 		if (script.IsEmpty()) {
 
 			V8GL::logException(&try_catch);
-			return scope.Close(v8::False());
+			value = v8::False();
 
 		} else {
 
@@ -143,7 +147,7 @@ namespace v8gl {
 
 				// assert(try_catch.HasCaught());
 				V8GL::logException(&try_catch);
-				return scope.Close(v8::False());
+				value = v8::False();
 
 			} else if (!result->IsUndefined()) {
 
@@ -152,14 +156,17 @@ namespace v8gl {
 				const char* cstr = *str;
 				printf("%s\n", cstr);
 
-				return scope.Close(v8::True());
+				value = v8::True();
 
 			}
 
 		}
 
 
-		return scope.Close(v8::False());
+		context->Exit();
+		scope.Close(value);
+
+		return value;
 
 	}
 
