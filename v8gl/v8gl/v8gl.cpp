@@ -28,7 +28,7 @@ namespace v8gl {
 
 //	v8::Persistent<v8::Context> context;
 
-	V8GL::V8GL(int* pargc, char** argv) {
+	void V8GL::initialize(int* pargc, char** argv) {
 
 		int argc = *pargc;
 
@@ -79,12 +79,6 @@ namespace v8gl {
 		GlFactory::self_ = v8::Persistent<v8::Object>::New(Gl->NewInstance());
 
 
-		char buf[PATH_MAX + 1];
-		char *filepath = realpath(argv[1], buf);
-
-		char* rawsource = V8GL::read(filepath);
-		v8::Local<v8::String> source = v8::String::New(rawsource);
-
 		// EXPORT: v8gl /path/to/init.js --export-json
 		if (argc > 2 && strcmp(argv[2], "--export-json") == 0) {
 
@@ -115,6 +109,12 @@ namespace v8gl {
 
 		}
 
+
+		char buf[PATH_MAX + 1];
+		char *filepath = realpath(argv[1], buf);
+
+		char* rawsource = V8GL::read(filepath);
+		v8::Local<v8::String> source = v8::String::New(rawsource);
 
 		if (source.IsEmpty()) {
 			v8::ThrowException(v8::String::New("Error reading initialization script file."));

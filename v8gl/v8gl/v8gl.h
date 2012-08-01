@@ -15,7 +15,7 @@ namespace v8gl {
 
 		public:
 
-			V8GL(int* pargc, char** argv);
+			static void initialize(int* pargc, char** argv);
 
 			static v8::Handle<v8::Value> execute(v8::Handle<v8::String> source, v8::Handle<v8::String> filename);
 			static v8::Handle<v8::Value> handleExportADK(const v8::Arguments& args);
