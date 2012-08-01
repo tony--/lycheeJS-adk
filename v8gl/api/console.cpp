@@ -28,11 +28,11 @@ namespace api {
 			return v8::Undefined();
 		}
 
+		v8::HandleScope scope;
 		v8::Local<v8::Object> self = args.Holder();
 		v8::Persistent<v8::Context> context(self->CreationContext());
 
-		v8::Context::Scope context_scope(context);
-		v8::HandleScope scope;
+		context->Enter();
 
 		v8::Handle<v8::Object> global = context->Global();
 		v8::Handle<v8::Object> JSON = global->Get(v8::String::New("JSON"))->ToObject();
@@ -55,6 +55,7 @@ namespace api {
 
 		}
 
+		context->Exit();
 
 		return scope.Close(v8::Undefined());
 

@@ -123,6 +123,9 @@ namespace api {
 	v8::Handle<v8::Value> Script::handleExecute(const v8::Arguments& args) {
 
 		v8::HandleScope scope;
+		v8::Local<v8::Object> self = args.Holder();
+		v8::Persistent<v8::Context> context(self->CreationContext());
+
 		v8::Local<v8::Object> thisObj = args.This();
 
 		if (thisObj.IsEmpty()) {
@@ -135,7 +138,10 @@ namespace api {
 
 			v8::Local<v8::String> data = v8::String::Cast(*thisObj->Get(property));
 			v8::Local<v8::String> url = v8::String::Cast(*thisObj->Get(v8::String::New("url")));
-//			return scope.Close(v8gl::V8GL::execute(data, url));
+
+			v8::Handle<v8::Value> value = v8gl::V8GL::execute(context, data, url);
+
+			return scope.Close(value);
 
 		}
 
