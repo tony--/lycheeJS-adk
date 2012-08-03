@@ -47,13 +47,15 @@
 
 	};
 
-	var timer = function() {
+	var timer = function(data) {
 
 		angle += 3;
 		angle %= 360;
 
 		glut.postRedisplay();
-		glut.timerFunc(fps, timer, 0);
+
+		// data passed to timerFunc callback is the last parameter
+		glut.timerFunc(fps, timer, data);
 
 	};
 

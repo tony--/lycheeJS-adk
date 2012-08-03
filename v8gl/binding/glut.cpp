@@ -54,12 +54,12 @@ namespace binding {
 	 */
 	v8::Handle<v8::Value> GLUT::handleMainLoop(const v8::Arguments& args) {
 		glutMainLoop();
-		return v8::Null();
+		return v8::Undefined();
 	}
  
 	v8::Handle<v8::Value> GLUT::handleInit(const v8::Arguments& args) {
 		glutInit((int*) _glut_pargc, (char**) _glut_argv);
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 
@@ -74,7 +74,7 @@ namespace binding {
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
 
 	}
  
@@ -89,56 +89,56 @@ namespace binding {
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
 
 	}
 
-	v8::Handle<v8::Value> GLUT::getRGBA(v8::Local<v8::String> property, const v8::AccessorInfo& info) {
+	v8::Handle<v8::Value> GLUT::getRGBA(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 		return v8::Uint32::New(GLUT_RGBA);
 	}
 
-	v8::Handle<v8::Value> GLUT::getRGB(v8::Local<v8::String> property, const v8::AccessorInfo& info) {
+	v8::Handle<v8::Value> GLUT::getRGB(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 		return v8::Uint32::New(GLUT_RGB);
 	}
 
-	v8::Handle<v8::Value> GLUT::getINDEX(v8::Local<v8::String> property, const v8::AccessorInfo& info) {
+	v8::Handle<v8::Value> GLUT::getINDEX(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 		return v8::Uint32::New(GLUT_INDEX);
 	}
 
-	v8::Handle<v8::Value> GLUT::getSINGLE(v8::Local<v8::String> property, const v8::AccessorInfo& info) {
+	v8::Handle<v8::Value> GLUT::getSINGLE(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 		return v8::Uint32::New(GLUT_SINGLE);
 	}
 
-	v8::Handle<v8::Value> GLUT::getDOUBLE(v8::Local<v8::String> property, const v8::AccessorInfo& info) {
+	v8::Handle<v8::Value> GLUT::getDOUBLE(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 		return v8::Uint32::New(GLUT_DOUBLE);
 	}
 
-	v8::Handle<v8::Value> GLUT::getACCUM(v8::Local<v8::String> property, const v8::AccessorInfo& info) {
+	v8::Handle<v8::Value> GLUT::getACCUM(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 		return v8::Uint32::New(GLUT_ACCUM);
 	}
 
-	v8::Handle<v8::Value> GLUT::getALPHA(v8::Local<v8::String> property, const v8::AccessorInfo& info) {
+	v8::Handle<v8::Value> GLUT::getALPHA(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 		return v8::Uint32::New(GLUT_ALPHA);
 	}
 
-	v8::Handle<v8::Value> GLUT::getDEPTH(v8::Local<v8::String> property, const v8::AccessorInfo& info) {
+	v8::Handle<v8::Value> GLUT::getDEPTH(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 		return v8::Uint32::New(GLUT_DEPTH);
 	}
 
-	v8::Handle<v8::Value> GLUT::getSTENCIL(v8::Local<v8::String> property, const v8::AccessorInfo& info) {
+	v8::Handle<v8::Value> GLUT::getSTENCIL(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 		return v8::Uint32::New(GLUT_STENCIL);
 	}
 
-	v8::Handle<v8::Value> GLUT::getMULTISAMPLE(v8::Local<v8::String> property, const v8::AccessorInfo& info) {
+	v8::Handle<v8::Value> GLUT::getMULTISAMPLE(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 		return v8::Uint32::New(GLUT_MULTISAMPLE);
 	}
 
-	v8::Handle<v8::Value> GLUT::getSTEREO(v8::Local<v8::String> property, const v8::AccessorInfo& info) {
+	v8::Handle<v8::Value> GLUT::getSTEREO(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 		return v8::Uint32::New(GLUT_STEREO);
 	}
 
 	// FIXME: Evaluate where this is available
-	// v8::Handle<v8::Value> GLUT::getLUMINANCE(v8::Local<v8::String> property, const v8::AccessorInfo& info) {
+	// v8::Handle<v8::Value> GLUT::getLUMINANCE(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 	//	return v8::Uint32::New(GLUT_LUMINANCE);
 	//}
 
@@ -152,7 +152,7 @@ namespace binding {
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
 
 	}
  
@@ -175,7 +175,7 @@ namespace binding {
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
 
 	}
 
@@ -195,7 +195,7 @@ namespace binding {
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
 
 	}
 
@@ -217,7 +217,7 @@ namespace binding {
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
 
 	}
 
@@ -231,21 +231,18 @@ namespace binding {
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
 
 	}
 
 	v8::Handle<v8::Value> GLUT::handlePostRedisplay(const v8::Arguments& args) {
 		glutPostRedisplay();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 	v8::Handle<v8::Value> GLUT::handleSwapBuffers(const v8::Arguments& args) {
-
-fprintf(stdout, "swapping buffers");
-
 		glutSwapBuffers();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 	v8::Handle<v8::Value> GLUT::handlePositionWindow(const v8::Arguments& args) {
@@ -259,7 +256,7 @@ fprintf(stdout, "swapping buffers");
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
 
 	}
 
@@ -274,38 +271,38 @@ fprintf(stdout, "swapping buffers");
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
 
 	}
 
 	v8::Handle<v8::Value> GLUT::handleFullScreen(const v8::Arguments& args) {
 		glutFullScreen();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 	v8::Handle<v8::Value> GLUT::handlePopWindow(const v8::Arguments& args) {
 		glutPopWindow();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 	v8::Handle<v8::Value> GLUT::handlePushWindow(const v8::Arguments& args) {
 		glutPushWindow();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 	v8::Handle<v8::Value> GLUT::handleShowWindow(const v8::Arguments& args) {
 		glutShowWindow();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 	v8::Handle<v8::Value> GLUT::handleHideWindow(const v8::Arguments& args) {
 		glutHideWindow();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 	v8::Handle<v8::Value> GLUT::handleIconifyWindow(const v8::Arguments& args) {
 		glutIconifyWindow();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 	v8::Handle<v8::Value> GLUT::handleSetWindowTitle(const v8::Arguments& args) {
@@ -319,7 +316,7 @@ fprintf(stdout, "swapping buffers");
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
 
 	}
 
@@ -334,7 +331,7 @@ fprintf(stdout, "swapping buffers");
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
 
 	}
 
@@ -346,27 +343,27 @@ fprintf(stdout, "swapping buffers");
 
 	v8::Handle<v8::Value> GLUT::handleEstablishOverlay(const v8::Arguments& args) {
 		glutEstablishOverlay();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 	v8::Handle<v8::Value> GLUT::handleRemoveOverlay(const v8::Arguments& args) {
 		glutRemoveOverlay();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 	v8::Handle<v8::Value> GLUT::handlePostOverlayRedisplay(const v8::Arguments& args) {
 		glutPostOverlayRedisplay();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 	v8::Handle<v8::Value> GLUT::handleShowOverlay(const v8::Arguments& args) {
 		glutShowOverlay();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 	v8::Handle<v8::Value> GLUT::handleHideOverlay(const v8::Arguments& args) {
 		glutHideOverlay();
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 
@@ -400,7 +397,7 @@ fprintf(stdout, "swapping buffers");
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
 
 	}
 
@@ -410,7 +407,7 @@ fprintf(stdout, "swapping buffers");
 
 		v8::HandleScope scope;
 
-		v8::Local<v8::Object> callback_scope = _glut_displayFuncCallback->CreationContext()->Global()->Get(v8::String::NewSymbol("glut"))->ToObject();
+		v8::Local<v8::Object> callback_scope = _glut_overlayDisplayFuncCallback->CreationContext()->Global()->Get(v8::String::NewSymbol("glut"))->ToObject();
 		v8::Local<v8::Value> result = _glut_overlayDisplayFuncCallback->Call(callback_scope, 0, NULL);
 
 		scope.Close(result);
@@ -429,16 +426,45 @@ fprintf(stdout, "swapping buffers");
 
 		}
 
-		return v8::Null();
+		return v8::Undefined();
+
+	}
+
+	v8::Persistent<v8::Function> _glut_reshapeFuncCallback;
+
+	void _glut_reshapeFunc(int width, int height) {
+
+		v8::HandleScope scope;
+
+		v8::Handle<v8::Value> args[2];
+		args[0] = v8::Integer::New(width);
+		args[1] = v8::Integer::New(height);
+
+		v8::Local<v8::Object> callback_scope = _glut_reshapeFuncCallback->CreationContext()->Global()->Get(v8::String::NewSymbol("glut"))->ToObject();
+		v8::Local<v8::Value> result = _glut_reshapeFuncCallback->Call(callback_scope, 2, args);
+
+		scope.Close(result);
 
 	}
 
 	v8::Handle<v8::Value> GLUT::handleReshapeFunc(const v8::Arguments& args) {
-		return v8::Null();
+
+		if (args.Length() == 1 && args[0]->IsFunction()) {
+
+			_glut_reshapeFuncCallback.Dispose();
+			v8::Handle<v8::Function> callback = v8::Handle<v8::Function>::Cast(args[0]);
+			_glut_reshapeFuncCallback = v8::Persistent<v8::Function>::New(callback);
+
+			glutReshapeFunc((void (*)(int width, int height)) _glut_reshapeFunc);
+
+		}
+
+		return v8::Undefined();
+
 	}
 
 	v8::Handle<v8::Value> GLUT::handleIdleFunc(const v8::Arguments& args) {
-		return v8::Null();
+		return v8::Undefined();
 	}
 
 
@@ -450,11 +476,7 @@ fprintf(stdout, "swapping buffers");
 
 	_glut_timer_data * _glut_timerStack[50] = { NULL };
 
-	v8::Persistent<v8::Function> _glut_timerFuncCallback;
-
 	void _glut_timerFunc(int id) {
-
-fprintf(stdout, "_glut_timerFunc is executed %d ", id);
 
 		_glut_timer_data * timer = _glut_timerStack[id];
 
@@ -511,8 +533,6 @@ fprintf(stdout, "_glut_timerFunc is executed %d ", id);
 
 					_glut_timerStack[stackId] = data;
 
-fprintf(stdout, "FOUND A STACKID %d ", stackId);
-
 					found = true;
 					break;
 
@@ -524,17 +544,39 @@ fprintf(stdout, "FOUND A STACKID %d ", stackId);
 
 
 			if (found == true) {
-
 				glutTimerFunc((unsigned int) milliseconds, (void (*)(int)) _glut_timerFunc, (int) stackId);
-
 			}
 
 		}
 
-		return scope.Close(v8::Null());
+		return scope.Close(v8::Undefined());
 
 	}
 
+
+
+	/*
+	 * Geometric Object Rendering
+	 */
+	v8::Handle<v8::Value> GLUT::handleSolidIcosahedron(const v8::Arguments& args) {
+		glutSolidIcosahedron();
+		return v8::Undefined();
+	}
+
+	v8::Handle<v8::Value> GLUT::handleWireIcosahedron(const v8::Arguments& args) {
+		glutWireIcosahedron();
+		return v8::Undefined();
+	}
+
+	v8::Handle<v8::Value> GLUT::handleSolidOctahedron(const v8::Arguments& args) {
+		glutSolidOctahedron();
+		return v8::Undefined();
+	}
+
+	v8::Handle<v8::Value> GLUT::handleWireOctahedron(const v8::Arguments& args) {
+		glutWireOctahedron();
+		return v8::Undefined();
+	}
 
 
 
@@ -548,29 +590,29 @@ fprintf(stdout, "FOUND A STACKID %d ", stackId);
 
 		v8::HandleScope scope;
 
-		v8::Handle<v8::ObjectTemplate> glut = v8::ObjectTemplate::New();
+		v8::Handle<v8::ObjectTemplate> gluttpl = v8::ObjectTemplate::New();
 
 
 
 		/*
 		 * Initialization
 		 */
-		glut->Set(v8::String::NewSymbol("init"), v8::FunctionTemplate::New(GLUT::handleInit));
-		glut->Set(v8::String::NewSymbol("initWindowPosition"), v8::FunctionTemplate::New(GLUT::handleInitWindowPosition));
-		glut->Set(v8::String::NewSymbol("initWindowSize"), v8::FunctionTemplate::New(GLUT::handleInitWindowSize));
-		glut->Set(v8::String::NewSymbol("initDisplayMode"), v8::FunctionTemplate::New(GLUT::handleInitDisplayMode));
+		gluttpl->Set(v8::String::NewSymbol("init"), v8::FunctionTemplate::New(GLUT::handleInit));
+		gluttpl->Set(v8::String::NewSymbol("initWindowPosition"), v8::FunctionTemplate::New(GLUT::handleInitWindowPosition));
+		gluttpl->Set(v8::String::NewSymbol("initWindowSize"), v8::FunctionTemplate::New(GLUT::handleInitWindowSize));
+		gluttpl->Set(v8::String::NewSymbol("initDisplayMode"), v8::FunctionTemplate::New(GLUT::handleInitDisplayMode));
 
-		glut->SetAccessor(v8::String::NewSymbol("RGBA"),        GLUT::getRGBA);
-		glut->SetAccessor(v8::String::NewSymbol("RGB"),         GLUT::getRGB);
-		glut->SetAccessor(v8::String::NewSymbol("INDEX"),       GLUT::getINDEX);
-		glut->SetAccessor(v8::String::NewSymbol("SINGLE"),      GLUT::getSINGLE);
-		glut->SetAccessor(v8::String::NewSymbol("DOUBLE"),      GLUT::getDOUBLE);
-		glut->SetAccessor(v8::String::NewSymbol("ACCUM"),       GLUT::getACCUM);
-		glut->SetAccessor(v8::String::NewSymbol("ALPHA"),       GLUT::getALPHA);
-		glut->SetAccessor(v8::String::NewSymbol("DEPTH"),       GLUT::getDEPTH);
-		glut->SetAccessor(v8::String::NewSymbol("STENCIL"),     GLUT::getSTENCIL);
-		glut->SetAccessor(v8::String::NewSymbol("MULTISAMPLE"), GLUT::getMULTISAMPLE);
-		glut->SetAccessor(v8::String::NewSymbol("STEREO"),      GLUT::getSTEREO);
+		gluttpl->SetAccessor(v8::String::NewSymbol("RGBA"),        GLUT::getRGBA);
+		gluttpl->SetAccessor(v8::String::NewSymbol("RGB"),         GLUT::getRGB);
+		gluttpl->SetAccessor(v8::String::NewSymbol("INDEX"),       GLUT::getINDEX);
+		gluttpl->SetAccessor(v8::String::NewSymbol("SINGLE"),      GLUT::getSINGLE);
+		gluttpl->SetAccessor(v8::String::NewSymbol("DOUBLE"),      GLUT::getDOUBLE);
+		gluttpl->SetAccessor(v8::String::NewSymbol("ACCUM"),       GLUT::getACCUM);
+		gluttpl->SetAccessor(v8::String::NewSymbol("ALPHA"),       GLUT::getALPHA);
+		gluttpl->SetAccessor(v8::String::NewSymbol("DEPTH"),       GLUT::getDEPTH);
+		gluttpl->SetAccessor(v8::String::NewSymbol("STENCIL"),     GLUT::getSTENCIL);
+		gluttpl->SetAccessor(v8::String::NewSymbol("MULTISAMPLE"), GLUT::getMULTISAMPLE);
+		gluttpl->SetAccessor(v8::String::NewSymbol("STEREO"),      GLUT::getSTEREO);
 
 		// FIXME: Evaluate where this is available
 		// glut->SetAccessor(v8::String::NewSymbol("LUMINANCE"),    GLUT::getLUMINANCE);
@@ -579,51 +621,60 @@ fprintf(stdout, "FOUND A STACKID %d ", stackId);
 		/*
 		 * Event Processing
 		 */
-		glut->Set(v8::String::NewSymbol("mainLoop"), v8::FunctionTemplate::New(GLUT::handleMainLoop));
+		gluttpl->Set(v8::String::NewSymbol("mainLoop"), v8::FunctionTemplate::New(GLUT::handleMainLoop));
 
 
 		/*
 		 * Window Management
 		 */
-		glut->Set(v8::String::NewSymbol("createWindow"), v8::FunctionTemplate::New(GLUT::handleCreateWindow));
-		glut->Set(v8::String::NewSymbol("createSubWindow"), v8::FunctionTemplate::New(GLUT::handleCreateSubWindow));
-		glut->Set(v8::String::NewSymbol("setWindow"), v8::FunctionTemplate::New(GLUT::handleSetWindow));
-		glut->Set(v8::String::NewSymbol("getWindow"), v8::FunctionTemplate::New(GLUT::handleGetWindow));
-		glut->Set(v8::String::NewSymbol("destroyWindow"), v8::FunctionTemplate::New(GLUT::handleDestroyWindow));
-		glut->Set(v8::String::NewSymbol("postRedisplay"), v8::FunctionTemplate::New(GLUT::handlePostRedisplay));
-		glut->Set(v8::String::NewSymbol("swapBuffers"), v8::FunctionTemplate::New(GLUT::handleSwapBuffers));
-		glut->Set(v8::String::NewSymbol("positionWindow"), v8::FunctionTemplate::New(GLUT::handlePositionWindow));
-		glut->Set(v8::String::NewSymbol("reshapeWindow"), v8::FunctionTemplate::New(GLUT::handleReshapeWindow));
-		glut->Set(v8::String::NewSymbol("fullscreen"), v8::FunctionTemplate::New(GLUT::handleFullScreen));
-		glut->Set(v8::String::NewSymbol("popWindow"), v8::FunctionTemplate::New(GLUT::handlePopWindow));
-		glut->Set(v8::String::NewSymbol("pushWindow"), v8::FunctionTemplate::New(GLUT::handlePushWindow));
-		glut->Set(v8::String::NewSymbol("showWindow"), v8::FunctionTemplate::New(GLUT::handleShowWindow));
-		glut->Set(v8::String::NewSymbol("hideWindow"), v8::FunctionTemplate::New(GLUT::handleHideWindow));
-		glut->Set(v8::String::NewSymbol("iconifyWindow"), v8::FunctionTemplate::New(GLUT::handleIconifyWindow));
-		glut->Set(v8::String::NewSymbol("setWindowTitle"), v8::FunctionTemplate::New(GLUT::handleSetWindowTitle));
-		glut->Set(v8::String::NewSymbol("setIconTitle"), v8::FunctionTemplate::New(GLUT::handleSetIconTitle));
+		gluttpl->Set(v8::String::NewSymbol("createWindow"), v8::FunctionTemplate::New(GLUT::handleCreateWindow));
+		gluttpl->Set(v8::String::NewSymbol("createSubWindow"), v8::FunctionTemplate::New(GLUT::handleCreateSubWindow));
+		gluttpl->Set(v8::String::NewSymbol("setWindow"), v8::FunctionTemplate::New(GLUT::handleSetWindow));
+		gluttpl->Set(v8::String::NewSymbol("getWindow"), v8::FunctionTemplate::New(GLUT::handleGetWindow));
+		gluttpl->Set(v8::String::NewSymbol("destroyWindow"), v8::FunctionTemplate::New(GLUT::handleDestroyWindow));
+		gluttpl->Set(v8::String::NewSymbol("postRedisplay"), v8::FunctionTemplate::New(GLUT::handlePostRedisplay));
+		gluttpl->Set(v8::String::NewSymbol("swapBuffers"), v8::FunctionTemplate::New(GLUT::handleSwapBuffers));
+		gluttpl->Set(v8::String::NewSymbol("positionWindow"), v8::FunctionTemplate::New(GLUT::handlePositionWindow));
+		gluttpl->Set(v8::String::NewSymbol("reshapeWindow"), v8::FunctionTemplate::New(GLUT::handleReshapeWindow));
+		gluttpl->Set(v8::String::NewSymbol("fullScreen"), v8::FunctionTemplate::New(GLUT::handleFullScreen));
+		gluttpl->Set(v8::String::NewSymbol("popWindow"), v8::FunctionTemplate::New(GLUT::handlePopWindow));
+		gluttpl->Set(v8::String::NewSymbol("pushWindow"), v8::FunctionTemplate::New(GLUT::handlePushWindow));
+		gluttpl->Set(v8::String::NewSymbol("showWindow"), v8::FunctionTemplate::New(GLUT::handleShowWindow));
+		gluttpl->Set(v8::String::NewSymbol("hideWindow"), v8::FunctionTemplate::New(GLUT::handleHideWindow));
+		gluttpl->Set(v8::String::NewSymbol("iconifyWindow"), v8::FunctionTemplate::New(GLUT::handleIconifyWindow));
+		gluttpl->Set(v8::String::NewSymbol("setWindowTitle"), v8::FunctionTemplate::New(GLUT::handleSetWindowTitle));
+		gluttpl->Set(v8::String::NewSymbol("setIconTitle"), v8::FunctionTemplate::New(GLUT::handleSetIconTitle));
 
 
 		/*
 		 * Overlay Management
 		 */
-		glut->Set(v8::String::NewSymbol("establishOverlay"),     v8::FunctionTemplate::New(GLUT::handleEstablishOverlay));
-		glut->Set(v8::String::NewSymbol("removeOverlay"),        v8::FunctionTemplate::New(GLUT::handleRemoveOverlay));
-		glut->Set(v8::String::NewSymbol("postOverlayRedisplay"), v8::FunctionTemplate::New(GLUT::handlePostOverlayRedisplay));
-		glut->Set(v8::String::NewSymbol("showOverlay"),          v8::FunctionTemplate::New(GLUT::handleShowOverlay));
-		glut->Set(v8::String::NewSymbol("hideOverlay"),          v8::FunctionTemplate::New(GLUT::handleHideOverlay));
+		gluttpl->Set(v8::String::NewSymbol("establishOverlay"),     v8::FunctionTemplate::New(GLUT::handleEstablishOverlay));
+		gluttpl->Set(v8::String::NewSymbol("removeOverlay"),        v8::FunctionTemplate::New(GLUT::handleRemoveOverlay));
+		gluttpl->Set(v8::String::NewSymbol("postOverlayRedisplay"), v8::FunctionTemplate::New(GLUT::handlePostOverlayRedisplay));
+		gluttpl->Set(v8::String::NewSymbol("showOverlay"),          v8::FunctionTemplate::New(GLUT::handleShowOverlay));
+		gluttpl->Set(v8::String::NewSymbol("hideOverlay"),          v8::FunctionTemplate::New(GLUT::handleHideOverlay));
 
 
 		/*
 		 * Callback Registration
 		 */
-		glut->Set(v8::String::NewSymbol("displayFunc"),        v8::FunctionTemplate::New(GLUT::handleDisplayFunc));
-		glut->Set(v8::String::NewSymbol("overlayDisplayFunc"), v8::FunctionTemplate::New(GLUT::handleOverlayDisplayFunc));
-		glut->Set(v8::String::NewSymbol("reshapeFunc"),        v8::FunctionTemplate::New(GLUT::handleReshapeFunc));
-		glut->Set(v8::String::NewSymbol("idleFunc"),           v8::FunctionTemplate::New(GLUT::handleIdleFunc));
-		glut->Set(v8::String::NewSymbol("timerFunc"),          v8::FunctionTemplate::New(GLUT::handleTimerFunc));
+		gluttpl->Set(v8::String::NewSymbol("displayFunc"),        v8::FunctionTemplate::New(GLUT::handleDisplayFunc));
+		gluttpl->Set(v8::String::NewSymbol("overlayDisplayFunc"), v8::FunctionTemplate::New(GLUT::handleOverlayDisplayFunc));
+		gluttpl->Set(v8::String::NewSymbol("reshapeFunc"),        v8::FunctionTemplate::New(GLUT::handleReshapeFunc));
+		gluttpl->Set(v8::String::NewSymbol("idleFunc"),           v8::FunctionTemplate::New(GLUT::handleIdleFunc));
+		gluttpl->Set(v8::String::NewSymbol("timerFunc"),          v8::FunctionTemplate::New(GLUT::handleTimerFunc));
 
-		return scope.Close(glut);
+
+		/*
+		 * Geometric Object Rendering
+		 */
+		gluttpl->Set(v8::String::NewSymbol("solidIcosahedron"), v8::FunctionTemplate::New(GLUT::handleSolidIcosahedron));
+		gluttpl->Set(v8::String::NewSymbol("wireIcosahedron"),  v8::FunctionTemplate::New(GLUT::handleWireIcosahedron));
+		gluttpl->Set(v8::String::NewSymbol("solidOctahedron"),  v8::FunctionTemplate::New(GLUT::handleSolidOctahedron));
+		gluttpl->Set(v8::String::NewSymbol("wireOctahedron"),   v8::FunctionTemplate::New(GLUT::handleWireOctahedron));
+
+		return scope.Close(gluttpl);
 
 	}
 
