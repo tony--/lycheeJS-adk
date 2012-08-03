@@ -3,7 +3,6 @@
 
 	var _delay;
 
-	glut.init();
 	glut.createWindow("Timeout Test");
 
 	console.log("typeof setTimeout: " + typeof setTimeout);
@@ -51,9 +50,6 @@
 		clearTimeout(handle);
 
 	console.groupEnd();
-
-	glut.mainLoop();
-
 
 })(this);
 

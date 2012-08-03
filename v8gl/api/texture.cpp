@@ -44,9 +44,9 @@ namespace api {
 		instanceTemplate->SetInternalFieldCount(0);
 
 		instanceTemplate->Set(v8::String::New("url"), v8::String::New(url), v8::ReadOnly);
-		instanceTemplate->Set(v8::String::New("id"), v8::Null(), v8::ReadOnly);
-		instanceTemplate->Set(v8::String::New("width"), v8::Null(), v8::ReadOnly);
-		instanceTemplate->Set(v8::String::New("height"), v8::Null(), v8::ReadOnly);
+		instanceTemplate->Set(v8::String::New("id"), v8::Null());
+		instanceTemplate->Set(v8::String::New("width"), v8::Null());
+		instanceTemplate->Set(v8::String::New("height"), v8::Null());
 
 		instanceTemplate->Set(v8::String::New("load"), v8::FunctionTemplate::New(handleLoad), v8::ReadOnly);
 		instanceTemplate->Set(v8::String::New("onload"), v8::FunctionTemplate::New());

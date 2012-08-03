@@ -5,7 +5,6 @@
 	var _count = 0;
 	var _handle;
 
-	glut.init();
 	glut.createWindow("Interval Test");
 
 	console.log("typeof setInterval: " + typeof setInterval);
@@ -39,9 +38,6 @@
 		_handle = setInterval(verify, _delay);
 
 	console.groupEnd();
-
-	glut.mainLoop();
-
 
 })(this);
 

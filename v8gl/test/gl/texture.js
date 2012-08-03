@@ -51,7 +51,6 @@
 	};
 
 
-	glut.init();
 	glut.initDisplayMode(glut.DOUBLE | glut.RGBA | glut.DEPTH);
 
 	glut.initWindowSize(640, 480);
@@ -71,8 +70,6 @@
 
 		glut.displayFunc(render);
 		glut.reshapeFunc(reshape);
-
-		glut.mainLoop();
 
 	};
 

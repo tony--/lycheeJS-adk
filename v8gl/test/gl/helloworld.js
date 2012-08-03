@@ -56,7 +56,6 @@ var render = function() {
 	};
 
 
-	glut.init();
 	glut.initDisplayMode(glut.DOUBLE | glut.RGB | glut.DEPTH);
 
 	glut.initWindowSize(640, 480);
@@ -69,8 +68,6 @@ var render = function() {
 
 	glut.displayFunc(render);
 	glut.reshapeFunc(reshape);
-
-	glut.mainLoop();
 
 })(this);
 

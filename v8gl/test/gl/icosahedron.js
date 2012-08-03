@@ -66,7 +66,6 @@
 
 
 
-	glut.init();
 	glut.initDisplayMode(glut.DOUBLE | glut.RGB | glut.DEPTH);
 
 	glut.initWindowSize(640, 480);
@@ -82,8 +81,6 @@
 	glut.displayFunc(render);
 	glut.reshapeFunc(reshape);
 	glut.timerFunc(fps, timer, {});
-
-	glut.mainLoop();
 
 })(this);
 
