@@ -1,40 +1,58 @@
 
 (function(global) {
 
-	console.group("Starting test...");
+	var _delay;
+
+	glut.init();
+	glut.createWindow("Timeout Test");
 
 	console.log("typeof setTimeout: " + typeof setTimeout);
-	console.log("setTimeout.toString(): " + setTimeout.toString());
 
-	var callbackId = 0;
-	var callback = function() {
-		callbackId++;
-		console.log('callback fired. (#' + callbackId + ')');
-	};
 
-	console.group("var handle = setTimeout(callback, delay)");
+	console.group("setTimeout");
 
 		var setAt = Date.now();
-		var delay = (Math.random() * 1337) | 0;
 
-		console.log('setTimeout(callback, ' + delay + ')');
+		var verify = function(delay) {
 
-		var timer = setTimeout(function() {
+			console.group('setTimeout callback');
 
-			if (Date.now() - setAt === delay) {
-				console.log('success.');
+			var difference = Math.abs(Math.abs(Date.now() - setAt) - delay) | 0;
+
+			if (difference < 32) {
+				console.log('success. (difference: ' + difference + 'ms)');
 			} else {
-				console.log('fail. (difference: ' + ((Date.now() - setAt - delay) | 0) + ')');
+				console.error('fail. (difference: ' + difference + 'ms)');
 			}
 
-
-			// END all the test stuff.
-			console.groupEnd();
 			console.groupEnd();
 
-		}, delay);
+		};
 
+		_delay = (Math.random() * 1337) | 0;
 
+		console.log("setTimeout(verify, " + _delay + ")");
+		setTimeout(verify, _delay);
+
+	console.groupEnd();
+
+	console.group("clearTimeout");
+
+		_delay = (Math.random() * 1337) | 0;
+
+		console.log("var handle = setTimeout(verify, " + _delay + ")");
+		var handle = setTimeout(function() {
+			console.group('setTimeout callback');
+			console.error("clearTimeout(handle) failed.");
+			console.groupEnd();
+		}, (Math.random() * 1337) | 0);
+
+		console.log("clearTimeout(handle)");
+		clearTimeout(handle);
+
+	console.groupEnd();
+
+	glut.mainLoop();
 
 
 })(this);

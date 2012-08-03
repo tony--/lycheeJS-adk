@@ -47,18 +47,31 @@ namespace binding {
 
 	int* _glut_pargc;
 	char** _glut_argv;
+	bool _glut_initialized = false;
+	bool _glut_loop_initialized = false;
 
 
 	/*
 	 * Initialization
 	 */
 	v8::Handle<v8::Value> GLUT::handleMainLoop(const v8::Arguments& args) {
-		glutMainLoop();
+
+		if (_glut_loop_initialized == false) {
+			glutMainLoop();
+			_glut_loop_initialized = true;
+		}
+
 		return v8::Undefined();
+
 	}
  
 	v8::Handle<v8::Value> GLUT::handleInit(const v8::Arguments& args) {
-		glutInit((int*) _glut_pargc, (char**) _glut_argv);
+
+		if (_glut_initialized == false) {
+			glutInit((int*) _glut_pargc, (char**) _glut_argv);
+			_glut_initialized = true;
+		}
+
 		return v8::Undefined();
 	}
 
