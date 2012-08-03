@@ -7,7 +7,7 @@
 
 #include "../binding/gl/glbind.h"
 #include "../binding/glu/glubind.h"
-#include "../binding/glut/glutbind.h"
+#include "../binding/glut.h"
 
 #include "../api/console.h"
 #include "../api/script.h"
@@ -34,7 +34,7 @@ namespace v8gl {
 		v8::Handle<v8::ObjectTemplate> Gl = GlFactory::createGl();
 		global->Set(v8::String::New("gl"), Gl);
 		global->Set(v8::String::New("glu"), GluFactory::createGlu());
-		global->Set(v8::String::New("glut"), GlutFactory::createGlut(pargc, argv));
+		global->Set(v8::String::New("glut"), binding::GLUT::generate(pargc, argv));
 
 
 		// Console API
@@ -59,10 +59,6 @@ namespace v8gl {
 		v8::Persistent<v8::Context> context = v8::Context::New(NULL, global);
 
 // FIXME: This crap needs to be all removed.
-// All GL, GLU and GLUT Factories have to be class instances
-// being dispatched on a targeted context
-
-		GlutFactory::context_ = v8::Persistent<v8::Context>::New(context);
 
 		v8::HandleScope scope;
 		context->Enter();

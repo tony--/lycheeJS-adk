@@ -200,7 +200,7 @@ build_v8gl() {
 	v8_libs=$v8_libs" "$V8_PATH/out/$1/obj.target/tools/gyp/libv8_snapshot.a;
 
 	build_libs=$v8_libs" -lpthread -lglut -lGLU -lGL -lpng";
-	build_srcs="main.cpp v8gl/v8gl.cpp api/console.cpp api/script.cpp api/text.cpp api/texture.cpp binding/gl/glbind.cpp binding/glu/glubind.cpp binding/glut/glutbind.cpp";
+	build_srcs="main.cpp v8gl/v8gl.cpp api/console.cpp api/script.cpp api/text.cpp api/texture.cpp binding/gl/glbind.cpp binding/glu/glubind.cpp binding/glut.cpp";
 
 	if [ $DEBUG_MODE -eq 1 ]
 	then
