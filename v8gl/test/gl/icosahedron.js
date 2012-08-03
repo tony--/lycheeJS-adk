@@ -52,6 +52,11 @@
 		angle += 3;
 		angle %= 360;
 
+
+		// Uncomment to see how to use the passed data object
+		// console.log("next timer()" + JSON.stringify(data));
+		// data.angle = angle;
+
 		glut.postRedisplay();
 
 		// data passed to timerFunc callback is the last parameter
@@ -76,7 +81,7 @@
 
 	glut.displayFunc(render);
 	glut.reshapeFunc(reshape);
-	glut.timerFunc(fps, timer, 0);
+	glut.timerFunc(fps, timer, {});
 
 	glut.mainLoop();
 
