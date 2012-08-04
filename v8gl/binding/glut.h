@@ -61,6 +61,12 @@ namespace binding {
 			static v8::Handle<v8::Value> handleIdleFunc(const v8::Arguments& args);
 			static v8::Handle<v8::Value> handleTimerFunc(const v8::Arguments& args);
 
+			static v8::Handle<v8::Value> getACTIVE_SHIFT(v8::Local<v8::String> property, const v8::AccessorInfo &info);
+			static v8::Handle<v8::Value> getACTIVE_CTRL(v8::Local<v8::String> property, const v8::AccessorInfo &info);
+			static v8::Handle<v8::Value> getACTIVE_ALT(v8::Local<v8::String> property, const v8::AccessorInfo &info);
+			static v8::Handle<v8::Value> handleGetModifiers(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleExtensionSupported(const v8::Arguments& args);
+
 			static v8::Handle<v8::Value> handleSolidIcosahedron(const v8::Arguments& args);
 			static v8::Handle<v8::Value> handleWireIcosahedron(const v8::Arguments& args);
 			static v8::Handle<v8::Value> handleSolidOctahedron(const v8::Arguments& args);

@@ -13,10 +13,10 @@
  * The GLUT bindings file were implemented following the spec document available here:
  * http://www.opengl.org/resources/libraries/glut/spec3/spec3.html
  *
- * Missing bindings (due to cross-platform conflictions):
+ * MISSING bindings (due to cross-platform conflictions):
  *
  * - 4. from Window Management:
- *   > glut.setCursor and all glut.CURSOR ENUMs
+ *   > glut.setCursor
  *
  * - 6. Menu Management
  *
@@ -35,9 +35,14 @@
  *   > glut.menuStatusFunc
  *
  * - 8. Color Index Colormap Management
- * - 9. State Retrieval (TODO)
- * - 10. Font Rendering (Use lychee.Font instead)
- * - 11. Geometric Object Rendering
+ *
+ * - 9. from State Retrieval:
+ *   > glut.get
+ *   > glut.layerGet
+ *   > glut.deviceGet
+ *
+ * - 10. Font Rendering (use lychee.Font instead)
+ * - 11. Geometric Object Rendering (TODO)
  * - 13. FORTRAN Binding
  *
  */
@@ -569,8 +574,50 @@ namespace binding {
 
 
 	/*
+	 * State Retrieval
+	 */
+
+	v8::Handle<v8::Value> GLUT::getACTIVE_SHIFT(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
+		return v8::Uint32::New(GLUT_ACTIVE_SHIFT);
+	}
+
+	v8::Handle<v8::Value> GLUT::getACTIVE_CTRL(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
+		return v8::Uint32::New(GLUT_ACTIVE_CTRL);
+	}
+
+	v8::Handle<v8::Value> GLUT::getACTIVE_ALT(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
+		return v8::Uint32::New(GLUT_ACTIVE_ALT);
+	}
+
+	v8::Handle<v8::Value> GLUT::handleGetModifiers(const v8::Arguments& args) {
+		int modifiers = glutGetModifiers();
+		return v8::Uint32::New(modifiers);
+	}
+
+	v8::Handle<v8::Value> GLUT::handleExtensionSupported(const v8::Arguments& args) {
+
+		if (args.Length() == 1) {
+
+			v8::String::Utf8Value raw(args[0]);
+			char* extension = *raw;
+
+			int isSupported = glutExtensionSupported(extension);
+			if (isSupported != 0) {
+				return v8::True();
+			}
+
+		}
+
+		return v8::False();
+
+	}
+
+
+
+	/*
 	 * Geometric Object Rendering
 	 */
+
 	v8::Handle<v8::Value> GLUT::handleSolidIcosahedron(const v8::Arguments& args) {
 		glutSolidIcosahedron();
 		return v8::Undefined();
@@ -677,6 +724,16 @@ namespace binding {
 		gluttpl->Set(v8::String::NewSymbol("reshapeFunc"),        v8::FunctionTemplate::New(GLUT::handleReshapeFunc));
 		gluttpl->Set(v8::String::NewSymbol("idleFunc"),           v8::FunctionTemplate::New(GLUT::handleIdleFunc));
 		gluttpl->Set(v8::String::NewSymbol("timerFunc"),          v8::FunctionTemplate::New(GLUT::handleTimerFunc));
+
+
+		/*
+		 * State Retrieval
+		 */
+		gluttpl->SetAccessor(v8::String::NewSymbol("ACTIVE_SHIFT"), GLUT::getACTIVE_SHIFT);
+		gluttpl->SetAccessor(v8::String::NewSymbol("ACTIVE_CTRL"),  GLUT::getACTIVE_CTRL);
+		gluttpl->SetAccessor(v8::String::NewSymbol("ACTIVE_ALT"),   GLUT::getACTIVE_ALT);
+		gluttpl->Set(v8::String::NewSymbol("getModifiers"),         v8::FunctionTemplate::New(GLUT::handleGetModifiers));
+		gluttpl->Set(v8::String::NewSymbol("extensionSupported"),   v8::FunctionTemplate::New(GLUT::handleExtensionSupported));
 
 
 		/*
