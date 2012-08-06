@@ -4,6 +4,7 @@
 #include <png.h>
 
 #include "texture.h"
+#include "../v8gl/path.h"
 
 #define TEXTURE_LOAD_ERROR 0
 
@@ -43,7 +44,7 @@ namespace api {
 		v8::Local<v8::ObjectTemplate> instanceTemplate = v8::ObjectTemplate::New();
 		instanceTemplate->SetInternalFieldCount(0);
 
-		instanceTemplate->Set(v8::String::New("url"), v8::String::New(url), v8::ReadOnly);
+		instanceTemplate->Set(v8::String::New("url"), v8::String::New(url));
 		instanceTemplate->Set(v8::String::New("id"), v8::Null());
 		instanceTemplate->Set(v8::String::New("width"), v8::Null());
 		instanceTemplate->Set(v8::String::New("height"), v8::Null());
@@ -77,16 +78,26 @@ namespace api {
 		if (thisObj->Has(property)) {
 
 			v8::String::Utf8Value value(thisObj->Get(v8::String::New("url")));
-			char* url = *value;
+			char* url = v8gl::Path::getReal((char*) *value);
 
 			int width;
 			int height;
 
 			GLuint id = api::Texture::load(url, width, height);
+			if (id == TEXTURE_LOAD_ERROR) {
 
-			thisObj->Set(property, v8::Integer::New(id), v8::ReadOnly);
-			thisObj->Set(v8::String::New("width"), v8::Integer::New(width), v8::ReadOnly);
-			thisObj->Set(v8::String::New("height"), v8::Integer::New(height), v8::ReadOnly);
+				thisObj->Set(property, v8::Null(), v8::ReadOnly);
+				v8::ThrowException(v8::Exception::Error(v8::String::New("Could not read Texture file.")));
+
+			} else {
+
+				thisObj->Set(property, v8::Integer::New(id), v8::ReadOnly);
+				thisObj->Set(v8::String::New("url"), v8::String::New(url), v8::ReadOnly);
+				thisObj->Set(v8::String::New("width"), v8::Integer::New(width), v8::ReadOnly);
+				thisObj->Set(v8::String::New("height"), v8::Integer::New(height), v8::ReadOnly);
+
+			}
+
 
 
 //			thisObj->SetPointerInInternalField(0, &texture);

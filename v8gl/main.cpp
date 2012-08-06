@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "v8gl/v8gl.h"
+#include "v8gl/path.h"
 
 int main(int argc, char* argv[]) {
 
@@ -42,8 +43,15 @@ int main(int argc, char* argv[]) {
 	if (source.IsEmpty()) {
 		v8::ThrowException(v8::String::New("Error reading initialization script file."));
 	} else {
+
+		v8gl::Path::setRoot(argv[0], argv[1]);
+
 		v8gl::V8GL::execute(context, v8::String::New("glut.init()"), v8::String::New("@built-in/main.js"));
+
+		char *old_path = v8gl::Path::pushRoot(filepath);
 		v8gl::V8GL::execute(context, source, v8::String::New(filepath));
+		v8gl::Path::popRoot(old_path);
+
 		v8gl::V8GL::execute(context, v8::String::New("glut.mainLoop()"), v8::String::New("@built-in/main.js"));
 	}
 

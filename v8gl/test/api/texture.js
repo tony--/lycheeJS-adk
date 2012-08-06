@@ -9,7 +9,7 @@
 
 	console.group("var instance = new Texture(url)");
 
-		var instance = new Texture("/var/www/lycheeJS-adk/v8gl/test/asset/texture.png");
+		var instance = new Texture("../asset/texture.png");
 
 		console.log("instance.url: " + instance.url);
 		console.log("instance.width: " + instance.width);

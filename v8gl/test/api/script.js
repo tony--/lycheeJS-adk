@@ -9,7 +9,7 @@
 
 	console.group("var instance = new Script(url)");
 
-		var instance = new Script("/var/www/lycheeJS-adk/v8gl/test/gl/icosahedron.js");
+		var instance = new Script("../gl/icosahedron.js");
 
 		console.log("instance.url: " + instance.url);
 		console.log("instance.data: " + instance.data);

@@ -3,6 +3,7 @@
 
 #include "script.h"
 #include "../v8gl/v8gl.h"
+#include "../v8gl/path.h"
 
 
 namespace api {
@@ -70,14 +71,20 @@ namespace api {
 			// v8::Local<v8::String> myProp = thisObj->Get(property)->ToString();
 
 			v8::String::Utf8Value value(thisObj->Get(v8::String::New("url")));
-			char* url = *value;
+			char* url = v8gl::Path::getReal((char*) *value);
 
 			char* data = api::Script::load(url);
 			if (data == NULL) {
+
 				thisObj->Set(property, v8::Null(), v8::ReadOnly);
-				v8::ThrowException(v8::Exception::Error(v8::String::New("Could not read file.")));
+				v8::ThrowException(v8::Exception::Error(v8::String::New("Could not read Script file.")));
+
 			} else {
+
+				// Recorrect the URL to make sure it's an absolute path
+				thisObj->Set(v8::String::New("url"), v8::String::New(url), v8::ReadOnly);
 				thisObj->Set(property, v8::String::New(data), v8::ReadOnly);
+
 			}
 
 			v8::Local<v8::Function> callback = v8::Function::Cast(*thisObj->Get(v8::String::New("onload")));
@@ -139,7 +146,12 @@ namespace api {
 			v8::Local<v8::String> data = v8::String::Cast(*thisObj->Get(property));
 			v8::Local<v8::String> url = v8::String::Cast(*thisObj->Get(v8::String::New("url")));
 
+			v8::String::Utf8Value utf8url(url);
+			char* filepath = *utf8url;
+
+			char *old_root = v8gl::Path::pushRoot(filepath);
 			v8::Handle<v8::Value> value = v8gl::V8GL::execute(context, data, url);
+			v8gl::Path::popRoot(old_root);
 
 			return scope.Close(value);
 
