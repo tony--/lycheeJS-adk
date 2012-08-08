@@ -67,10 +67,24 @@ namespace binding {
 			static v8::Handle<v8::Value> handleGetModifiers(const v8::Arguments& args);
 			static v8::Handle<v8::Value> handleExtensionSupported(const v8::Arguments& args);
 
-			static v8::Handle<v8::Value> handleSolidIcosahedron(const v8::Arguments& args);
-			static v8::Handle<v8::Value> handleWireIcosahedron(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleSolidSphere(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleWireSphere(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleSolidCube(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleWireCube(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleSolidCone(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleWireCone(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleSolidTorus(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleWireTorus(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleSolidDodecahedron(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleWireDodecahedron(const v8::Arguments& args);
 			static v8::Handle<v8::Value> handleSolidOctahedron(const v8::Arguments& args);
 			static v8::Handle<v8::Value> handleWireOctahedron(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleSolidTetrahedron(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleWireTetrahedron(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleSolidIcosahedron(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleWireIcosahedron(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleSolidTeapot(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleWireTeapot(const v8::Arguments& args);
 
 		public:
 

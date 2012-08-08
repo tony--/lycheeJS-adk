@@ -10,7 +10,7 @@
 
 
 /*
- * The GLUT bindings file were implemented following the spec document available here:
+ * The GLUT bindings were implemented following the spec document available here:
  * http://www.opengl.org/resources/libraries/glut/spec3/spec3.html
  *
  * MISSING bindings (due to cross-platform conflictions):
@@ -42,7 +42,6 @@
  *   > glut.deviceGet
  *
  * - 10. Font Rendering (use lychee.Font instead)
- * - 11. Geometric Object Rendering (TODO)
  * - 13. FORTRAN Binding
  *
  */
@@ -618,13 +617,151 @@ namespace binding {
 	 * Geometric Object Rendering
 	 */
 
-	v8::Handle<v8::Value> GLUT::handleSolidIcosahedron(const v8::Arguments& args) {
-		glutSolidIcosahedron();
+	v8::Handle<v8::Value> GLUT::handleSolidSphere(const v8::Arguments& args) {
+
+		if (args.Length() == 3) {
+
+			double radius = args[0]->NumberValue();
+			int slices = args[1]->IntegerValue();
+			int stacks = args[2]->IntegerValue();
+
+			glutSolidSphere((GLdouble) radius, (GLint) slices, (GLint) stacks);
+
+		}
+
+		return v8::Undefined();
+
+	}
+
+	v8::Handle<v8::Value> GLUT::handleWireSphere(const v8::Arguments& args) {
+
+		if (args.Length() == 3) {
+
+			double radius = args[0]->NumberValue();
+			int slices = args[1]->IntegerValue();
+			int stacks = args[2]->IntegerValue();
+
+			glutWireSphere((GLdouble) radius, (GLint) slices, (GLint) stacks);
+
+		}
+
+		return v8::Undefined();
+
+	}
+
+	v8::Handle<v8::Value> GLUT::handleSolidCube(const v8::Arguments& args) {
+
+		if (args.Length() == 1) {
+
+			double size = args[0]->NumberValue();
+
+			glutSolidCube((GLdouble) size);
+
+		}
+
+		return v8::Undefined();
+
+	}
+
+	v8::Handle<v8::Value> GLUT::handleWireCube(const v8::Arguments& args) {
+
+		if (args.Length() == 1) {
+
+			double size = args[0]->NumberValue();
+
+			glutWireCube((GLdouble) size);
+
+		}
+
+		return v8::Undefined();
+
+	}
+
+	v8::Handle<v8::Value> GLUT::handleSolidCone(const v8::Arguments& args) {
+
+		if (args.Length() == 4) {
+
+			double base = args[0]->NumberValue();
+			double height = args[1]->NumberValue();
+			int slices = args[2]->IntegerValue();
+			int stacks = args[3]->IntegerValue();
+
+			glutSolidCone((GLdouble) base, (GLdouble) height, (GLint) slices, (GLint) stacks);
+
+		}
+
+		return v8::Undefined();
+
+	}
+ 
+	v8::Handle<v8::Value> GLUT::handleWireCone(const v8::Arguments& args) {
+
+		if (args.Length() == 4) {
+
+			double base = args[0]->NumberValue();
+			double height = args[1]->NumberValue();
+			int slices = args[2]->IntegerValue();
+			int stacks = args[3]->IntegerValue();
+
+			glutWireCone((GLdouble) base, (GLdouble) height, (GLint) slices, (GLint) stacks);
+
+		}
+
+		return v8::Undefined();
+
+	}
+
+	v8::Handle<v8::Value> GLUT::handleSolidTorus(const v8::Arguments& args) {
+
+		if (args.Length() == 4) {
+
+			double innerRadius = args[0]->NumberValue();
+			double outerRadius = args[1]->NumberValue();
+			int nsides = args[2]->IntegerValue();
+			int rings = args[3]->IntegerValue();
+
+			glutSolidTorus((GLdouble) innerRadius, (GLdouble) outerRadius, (GLint) nsides, (GLint) rings);
+
+		}
+
+		return v8::Undefined();
+
+	}
+
+	v8::Handle<v8::Value> GLUT::handleWireTorus(const v8::Arguments& args) {
+
+		if (args.Length() == 4) {
+
+			double innerRadius = args[0]->NumberValue();
+			double outerRadius = args[1]->NumberValue();
+			int nsides = args[2]->IntegerValue();
+			int rings = args[3]->IntegerValue();
+
+			glutWireTorus((GLdouble) innerRadius, (GLdouble) outerRadius, (GLint) nsides, (GLint) rings);
+
+		}
+
+		return v8::Undefined();
+
+	}
+
+	v8::Handle<v8::Value> GLUT::handleSolidDodecahedron(const v8::Arguments& args) {
+		glutSolidDodecahedron();
 		return v8::Undefined();
 	}
 
-	v8::Handle<v8::Value> GLUT::handleWireIcosahedron(const v8::Arguments& args) {
-		glutWireIcosahedron();
+	v8::Handle<v8::Value> GLUT::handleWireDodecahedron(const v8::Arguments& args) {
+		glutWireDodecahedron();
+		return v8::Undefined();
+	}
+
+	v8::Handle<v8::Value> GLUT::handleSolidTetrahedron(const v8::Arguments& args) {
+		glutSolidTetrahedron();
+		return v8::Undefined();
+	}
+
+	v8::Handle<v8::Value> GLUT::handleWireTetrahedron(const v8::Arguments& args) {
+		glutWireTetrahedron();
 		return v8::Undefined();
 	}
 
@@ -637,6 +774,37 @@ namespace binding {
 		glutWireOctahedron();
 		return v8::Undefined();
 	}
+
+	v8::Handle<v8::Value> GLUT::handleSolidIcosahedron(const v8::Arguments& args) {
+		glutSolidIcosahedron();
+		return v8::Undefined();
+	}
+
+	v8::Handle<v8::Value> GLUT::handleWireIcosahedron(const v8::Arguments& args) {
+		glutWireIcosahedron();
+		return v8::Undefined();
+	}
+
+	v8::Handle<v8::Value> GLUT::handleSolidTeapot(const v8::Arguments& args) {
+
+		if (args.Length() == 1) {
+			double size = args[0]->NumberValue();
+			glutSolidTeapot((GLdouble) size);
+		}
+ 
+		return v8::Undefined();
+	}
+
+	v8::Handle<v8::Value> GLUT::handleWireTeapot(const v8::Arguments& args) {
+
+		if (args.Length() == 1) {
+			double size = args[0]->NumberValue();
+			glutWireTeapot((GLdouble) size);
+		}
+
+		return v8::Undefined();
+	}
+
 
 
 
@@ -739,10 +907,24 @@ namespace binding {
 		/*
 		 * Geometric Object Rendering
 		 */
-		gluttpl->Set(v8::String::NewSymbol("solidIcosahedron"), v8::FunctionTemplate::New(GLUT::handleSolidIcosahedron));
-		gluttpl->Set(v8::String::NewSymbol("wireIcosahedron"),  v8::FunctionTemplate::New(GLUT::handleWireIcosahedron));
-		gluttpl->Set(v8::String::NewSymbol("solidOctahedron"),  v8::FunctionTemplate::New(GLUT::handleSolidOctahedron));
-		gluttpl->Set(v8::String::NewSymbol("wireOctahedron"),   v8::FunctionTemplate::New(GLUT::handleWireOctahedron));
+		gluttpl->Set(v8::String::NewSymbol("solidSphere"),       v8::FunctionTemplate::New(GLUT::handleSolidSphere));
+		gluttpl->Set(v8::String::NewSymbol("wireSphere"),        v8::FunctionTemplate::New(GLUT::handleWireSphere));
+		gluttpl->Set(v8::String::NewSymbol("solidCube"),         v8::FunctionTemplate::New(GLUT::handleSolidCube));
+		gluttpl->Set(v8::String::NewSymbol("wireCube"),          v8::FunctionTemplate::New(GLUT::handleWireCube));
+		gluttpl->Set(v8::String::NewSymbol("solidCone"),         v8::FunctionTemplate::New(GLUT::handleSolidCone));
+		gluttpl->Set(v8::String::NewSymbol("WireCone"),          v8::FunctionTemplate::New(GLUT::handleWireCone));
+		gluttpl->Set(v8::String::NewSymbol("solidTorus"),        v8::FunctionTemplate::New(GLUT::handleSolidTorus));
+		gluttpl->Set(v8::String::NewSymbol("wireTorus"),         v8::FunctionTemplate::New(GLUT::handleWireTorus));
+		gluttpl->Set(v8::String::NewSymbol("solidDodecahedron"), v8::FunctionTemplate::New(GLUT::handleSolidDodecahedron));
+		gluttpl->Set(v8::String::NewSymbol("wireDodecahedron"),  v8::FunctionTemplate::New(GLUT::handleWireDodecahedron));
+		gluttpl->Set(v8::String::NewSymbol("solidOctahedron"),   v8::FunctionTemplate::New(GLUT::handleSolidOctahedron));
+		gluttpl->Set(v8::String::NewSymbol("wireOctahedron"),    v8::FunctionTemplate::New(GLUT::handleWireOctahedron));
+		gluttpl->Set(v8::String::NewSymbol("solidTetrahedron"),  v8::FunctionTemplate::New(GLUT::handleSolidTetrahedron));
+		gluttpl->Set(v8::String::NewSymbol("wireTetrahedron"),   v8::FunctionTemplate::New(GLUT::handleWireTetrahedron));
+		gluttpl->Set(v8::String::NewSymbol("solidIcosahedron"),  v8::FunctionTemplate::New(GLUT::handleSolidIcosahedron));
+		gluttpl->Set(v8::String::NewSymbol("wireIcosahedron"),   v8::FunctionTemplate::New(GLUT::handleWireIcosahedron));
+		gluttpl->Set(v8::String::NewSymbol("solidTeapot"),       v8::FunctionTemplate::New(GLUT::handleSolidTeapot));
+		gluttpl->Set(v8::String::NewSymbol("wireTeapot"),        v8::FunctionTemplate::New(GLUT::handleWireTeapot));
 
 		return scope.Close(gluttpl);
 
