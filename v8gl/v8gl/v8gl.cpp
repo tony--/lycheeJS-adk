@@ -6,7 +6,7 @@
 #include "v8gl.h"
 
 #include "../binding/gl/glbind.h"
-#include "../binding/glu/glubind.h"
+#include "../binding/glu.h"
 #include "../binding/glut.h"
 
 #include "../api/console.h"
@@ -33,7 +33,7 @@ namespace v8gl {
 		// GL/GLU/GLUT Bindings
 		v8::Handle<v8::ObjectTemplate> Gl = GlFactory::createGl();
 		global->Set(v8::String::New("gl"), Gl);
-		global->Set(v8::String::New("glu"), GluFactory::createGlu());
+		global->Set(v8::String::New("glu"), binding::GLU::generate());
 		global->Set(v8::String::New("glut"), binding::GLUT::generate(pargc, argv));
 
 
