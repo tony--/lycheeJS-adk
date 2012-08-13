@@ -11,6 +11,8 @@ namespace binding {
 
 		private:
 
+			static v8::Handle<v8::Value> handleCheckExtension(const v8::Arguments& args);
+
 			static v8::Handle<v8::Value> handleOrtho2D(const v8::Arguments& args);
 			static v8::Handle<v8::Value> handlePerspective(const v8::Arguments& args);
 			static v8::Handle<v8::Value> handleLookAt(const v8::Arguments& args);

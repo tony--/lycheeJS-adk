@@ -20,6 +20,11 @@
  * - 2. from Initialization:
  *   > glu.getString()
  *
+ * - 5. Polygon Tessellation (TODO)
+ * - 6. Quadrics (TODO)
+ * - 7. NURBS (non-uniform rational B-Splines, TODO)
+ * - 8. Errors (TODO)
+ *
  */
 
 
@@ -55,6 +60,46 @@ namespace binding {
 		}
 
 		return matrix;
+
+	}
+
+
+
+	/*
+	 * Initialization
+	 */
+	v8::Handle<v8::Value> GLU::handleCheckExtension(const v8::Arguments& args) {
+
+		if (args.Length() == 2) {
+
+			v8::Handle<v8::Array> arr_arg0 = v8::Handle<v8::Array>::Cast(args[0]);
+			GLubyte* arg0 = new GLubyte[arr_arg0->Length()];
+
+			for (unsigned i = 0; i < arr_arg0->Length(); i++) {
+				v8::Handle<v8::Value> value0(arr_arg0->Get(v8::Integer::New(i)));
+				arg0[i] = (GLubyte) value0->Uint32Value();
+			}
+
+
+			v8::Handle<v8::Array> arr_arg1 = v8::Handle<v8::Array>::Cast(args[1]);
+			GLubyte* arg1 = new GLubyte[arr_arg1->Length()];
+
+			for (unsigned i = 0; i < arr_arg1->Length(); i++) {
+				v8::Handle<v8::Value> value1(arr_arg1->Get(v8::Integer::New(i)));
+				arg1[i] = (GLubyte) value1->Uint32Value();
+			}
+
+
+			int result = gluCheckExtension((const GLubyte*) arg0, (const GLubyte*) arg1);
+
+			// GL_TRUE is 1, GL_FALSE is 0
+			if (result == 1) {
+				return v8::True();
+			}
+
+		}
+
+		return v8::False();
 
 	}
 
@@ -331,6 +376,12 @@ namespace binding {
 		v8::HandleScope scope;
 
 		v8::Handle<v8::ObjectTemplate> glutpl = v8::ObjectTemplate::New();
+
+
+		/*
+		 * Initialization
+		 */
+		glutpl->Set(v8::String::NewSymbol("checkExtension"), v8::FunctionTemplate::New(GLU::handleCheckExtension));
 
 
 		/*
