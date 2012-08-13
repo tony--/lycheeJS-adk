@@ -31,6 +31,8 @@ int main(int argc, char* argv[]) {
 
 	if (argc > 2 && strcmp(argv[2], "--export-json") == 0) {
 		v8gl::V8GL::dispatch(context, (char*) "export-json");
+	} else if (argc > 2 && strcmp(argv[2], "--export-js") == 0) {
+		v8gl::V8GL::dispatch(context, (char*) "export-js");
 	} else if (argc > 2 && strcmp(argv[2], "--export-adk") == 0) {
 		v8gl::V8GL::dispatch(context, (char*) "export-adk");
 	} else {

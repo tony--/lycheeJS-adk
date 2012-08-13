@@ -22,6 +22,18 @@ namespace api {
 
 	}
 
+	v8::Handle<v8::Value> Console::debug(v8::Handle<v8::Context> context, v8::Handle<v8::Value> data) {
+
+		v8::Handle<v8::Object> console = context->Global()->Get(v8::String::New("console"))->ToObject();
+		v8::Handle<v8::Function> console_debug = v8::Handle<v8::Function>::Cast(console->Get(v8::String::New("debug")));
+
+		v8::Handle<v8::Value> args[1];
+		args[0] = data;
+
+		return console_debug->Call(console, 1, args);
+
+	}
+
 	v8::Handle<v8::Value> Console::handleDebug(const v8::Arguments& args) {
 
 		if (args.Length() < 1) {
