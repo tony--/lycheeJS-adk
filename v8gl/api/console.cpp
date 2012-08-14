@@ -46,8 +46,7 @@ namespace api {
 
 		context->Enter();
 
-		v8::Handle<v8::Object> global = context->Global();
-		v8::Handle<v8::Object> JSON = global->Get(v8::String::New("JSON"))->ToObject();
+		v8::Handle<v8::Object> JSON = context->Global()->Get(v8::String::New("JSON"))->ToObject();
 		v8::Handle<v8::Function> JSON_stringify = v8::Handle<v8::Function>::Cast(JSON->Get(v8::String::New("stringify")));
 		
 
