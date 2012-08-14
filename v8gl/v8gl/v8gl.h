@@ -18,6 +18,7 @@ namespace v8gl {
 
 			static v8::Handle<v8::Value> execute(v8::Handle<v8::Context> context, v8::Handle<v8::String> source, v8::Handle<v8::String> filename);
 			static v8::Handle<v8::Value> handleExportADK(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleExportJS(const v8::Arguments& args);
 			static v8::Handle<v8::Value> handleExportJSON(const v8::Arguments& args);
 
 			static char* read(char* filename);

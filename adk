@@ -264,6 +264,8 @@ build_game() {
 
 	# Export the game environment to determine required libraries
 	./.temp/v8gl $game_source/init.js --export-adk > ./.temp/game_env.adk;
+	./.temp/v8gl $game_source/init.js --export-js > ./.temp/game_env.js;
+
 	. ./.temp/game_env.adk;
 
 	declare -A game_bases;
@@ -300,8 +302,9 @@ build_game() {
 		cp -R $game_source/asset $game_target/asset;
 	fi;
 
-	cp $game_source/init.js $game_target/init.js;
+	# cp $game_source/init.js $game_target/init.js;
 
+	cp ./.temp/game_env.js $game_target/init.js;
 	cp ./.temp/v8gl $game_target/v8gl;
 
 	echo -e "#/!bin/bash\n./v8gl ./init.js" > $game_target/start.sh;
