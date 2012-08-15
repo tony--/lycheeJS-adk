@@ -317,7 +317,7 @@ build_game() {
 	chmod +x $game_target/start;
 
 	cd $ADK_PATH;
-	rm -rf ".temp";
+#	rm -rf ".temp";
 
 	echo 0;
 

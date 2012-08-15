@@ -27,6 +27,14 @@ namespace api {
 
 		v8::HandleScope scope;
 
+		if (!args.IsConstructCall()) {
+			return scope.Close(v8::ThrowException(v8::Exception::TypeError(v8::String::New("V8GL object constructor cannot be called as a function."))));
+		}
+
+		if (args.Length() != 1) {
+			return scope.Close(v8::ThrowException(v8::Exception::SyntaxError(v8::String::New("Usage: new Script(url)"))));
+		}
+
 		v8::String::Utf8Value value(args[0]);
 		char* url = *value;
 

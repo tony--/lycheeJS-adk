@@ -9,7 +9,7 @@
 
 	console.group("var instance = new Text(url)");
 
-		var instance = new Text("/var/www/lycheeJS-adk/v8gl/test/api/text.js");
+		var instance = new Text("./text.js");
 
 		console.log("instance.toString(): " + instance.toString());
 		console.log("instance.url: " + instance.url);
