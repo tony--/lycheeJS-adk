@@ -10,30 +10,30 @@
 
 int main(int argc, char* argv[]) {
 
-	char usage[] = "\
-lycheeJS V8ADK runtime\
-\
-Recommended development environment: Ubuntu 12.04 64Bit\
-\
-The V8ADK runtime allows parsing the game, its environment and its\
-behaviours and exports the parsed data to the lycheeJS ADK.\
-\
-\
-Usage: %s <task> <path/to/init.js>\
-\
-\
-Tasks:\
-	export-bash      Exports the environment to a via-bash includable format.\
-	export-json      Exports the environment to a JSON format.\
-	rewrite          Rewrites and prepares your init.js to fit into the V8GL runtime.\
-\
-\
-Examples:\
-\
-\%s export-bash ./external/lycheeJS/game/boilerplate/init.js > game_env.sh\
-\%s export-json ./external/lycheeJS/game/boilerplate/init.js > game_env.json\
-\%s rewrite ./external/lycheeJS/game/boilerplate/init.js > v8gl_init.js\
-\
+	char usage[] = "\n\
+lycheeJS V8ADK runtime\n\
+\n\
+Recommended development environment: Ubuntu 12.04 64Bit\n\
+\n\
+The V8ADK runtime allows parsing the game, its environment and its\n\
+behaviours and exports the parsed data to the lycheeJS ADK.\n\
+\n\
+\n\
+Usage: %s <task> <path/to/init.js>\n\
+\n\
+\n\
+Tasks:\n\
+	export-bash      Exports the environment to a via-bash includable format.\n\
+	export-json      Exports the environment to a JSON format.\n\
+	rewrite          Rewrites and prepares your init.js to fit into the V8GL runtime.\n\
+\n\
+\n\
+Examples:\n\
+\n\
+v8adk export-bash ./external/lycheeJS/game/boilerplate/init.js > game_env.sh\n\
+v8adk export-json ./external/lycheeJS/game/boilerplate/init.js > game_env.json\n\
+v8adk rewrite ./external/lycheeJS/game/boilerplate/init.js > v8gl_init.js\n\
+\n\
 ";
 
 	if (argc == 3) {
@@ -83,7 +83,6 @@ Examples:\
 			delete rawsource;
 
 			context.Dispose();
-			scope.Close(v8::Null());
 
 			return 0;
 
@@ -107,9 +106,10 @@ Examples:\
 
 int main(int argc, char* argv[]) {
 
-	char buf[PATH_MAX + 1];
-	char *initpath = realpath("./init.js", buf);
-	char *mainpath = realpath("./game/Main.js", buf);
+	char buf1[PATH_MAX + 1];
+	char buf2[PATH_MAX + 1];
+	char *initpath = realpath("./init.js", buf1);
+	char *mainpath = realpath("./game/Main.js", buf2);
 
 	if (initpath && mainpath) {
 
@@ -120,8 +120,6 @@ int main(int argc, char* argv[]) {
 		v8::HandleScope scope;
 		v8::Persistent<v8::Context> context = v8gl::V8GL::initialize(&argc, argv);
 
-		v8gl::V8GL::dispatch(context, (char*) "lycheeJS");
-
 
 		v8::Local<v8::String> initsource = v8::String::New(_initsource);
 		v8::Local<v8::String> mainsource = v8::String::New(_mainsource);
@@ -130,7 +128,9 @@ int main(int argc, char* argv[]) {
 			v8::ThrowException(v8::String::New("Error reading ./init.js or ./game/Main.js"));
 		} else {
 
-			v8gl::Path::setRoot(argv[0], (char*) "./init.js");
+			v8gl::Path::setRoot(argv[0], initpath);
+
+			v8gl::V8GL::dispatch(context, (char*) "lycheeJS");
 
 			v8gl::V8GL::execute(context, v8::String::New("glut.init()"), v8::String::New("@built-in/main.js"));
 
@@ -158,13 +158,12 @@ int main(int argc, char* argv[]) {
 		delete _mainsource;
 
 		context.Dispose();
-		scope.Close(v8::Null());
 
 		return 0;
 
 	} else {
 
-		fprintf(stderr, "Error reading ./init.js or ./game/Main.js");
+		fprintf(stdout, "Error reading ./init.js or ./game/Main.js");
 		return 1;
 
 	}

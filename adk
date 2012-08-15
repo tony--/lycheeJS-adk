@@ -221,13 +221,10 @@ build_v8gl() {
 
 	cd $ADK_PATH;
 
-	if [ -d ".temp" ]
+	if [ ! -d ".temp" ]
 	then
-		rm -rf ".temp";
+		mkdir ".temp";
 	fi;
-
-
-	mkdir ".temp";
 
 
 	# create @built-in lycheeJS JavaScript headers
@@ -272,10 +269,11 @@ build_game() {
 	cd $ADK_PATH;
 
 	# Export the game environment to determine required libraries
-	./.temp/v8gl $game_source/init.js --export-adk > ./.temp/game_env.adk;
-	./.temp/v8gl $game_source/init.js --export-js > ./.temp/game_env.js;
+	$ADK_PATH/.temp/v8adk "export-bash" $game_source/init.js > $ADK_PATH/.temp/game_env.adk;
+	$ADK_PATH/.temp/v8adk "rewrite" $game_source/init.js > $ADK_PATH/.temp/game_init.js;
 
 	. ./.temp/game_env.adk;
+
 
 	declare -A game_bases;
 	declare -A game_tags;
@@ -313,11 +311,10 @@ build_game() {
 
 	# cp $game_source/init.js $game_target/init.js;
 
-	cp ./.temp/game_env.js $game_target/init.js;
-	cp ./.temp/v8gl $game_target/v8gl;
+	cp ./.temp/game_init.js $game_target/init.js;
+	cp ./.temp/v8gl $game_target/start;
 
-	echo -e "#/!bin/bash\n./v8gl ./init.js" > $game_target/start.sh;
-	chmod +x $game_target/start.sh;
+	chmod +x $game_target/start;
 
 	echo 0;
 
