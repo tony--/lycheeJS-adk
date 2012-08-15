@@ -22,7 +22,7 @@
 	console.group("instance.load()");
 
 		instance.onload = function() {
-			console.log("instance.onload callback(): " + this.toString());
+			console.log("instance.onload callback(): " + this.toString() + " > " + this.data.toString().substr(0, 10) + "...");
 		};
 
 	    instance.load();

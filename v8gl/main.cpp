@@ -116,11 +116,19 @@ int main(int argc, char* argv[]) {
 	v8::HandleScope scope;
 	v8::Persistent<v8::Context> context = v8gl::V8GL::initialize(&argc, argv);
 
-	v8gl::Path::setRoot(argv[0], argv[1]);
+	char buf0[PATH_MAX + 1];
+	char buf1[PATH_MAX + 1];
+
+	char *root_prog = realpath(argv[0], buf0);
+	char *root_file = realpath(argv[2], buf1);
+
+
+	v8gl::Path::setRoot((char*) root_prog, (char*) root_file);
 
 	v8gl::V8GL::dispatch(context, (char*) "lycheeJS");
 
 	v8gl::V8GL::execute(context, v8::String::New("glut.init()"), v8::String::New("@built-in/main.js"));
+	v8gl::V8GL::execute(context, v8::String::New("glut.createWindow(\"Initialization\");"), v8::String::New("@built-in/main.js"));
 
 	for (int i = 1; i < argc; i++) {
 
