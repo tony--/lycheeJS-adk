@@ -106,21 +106,28 @@ v8adk rewrite ./external/lycheeJS/game/boilerplate/init.js > v8gl_init.js\n\
 
 int main(int argc, char* argv[]) {
 
+	char buf0[PATH_MAX + 1];
+	char buf1[PATH_MAX + 1];
+	char *root_prog = realpath(argv[0], buf0);
+	char *root_file;
+
 	if (argc == 1) {
+
 		argc = 3;
 		argv[1] = (char*) "./game/Main.js";
 		argv[2] = (char*) "./init.js";
+
+		root_file = realpath(argv[2], buf1);
+
+	} else {
+
+		root_file = realpath(argv[0], buf1);
+
 	}
 
 
 	v8::HandleScope scope;
 	v8::Persistent<v8::Context> context = v8gl::V8GL::initialize(&argc, argv);
-
-	char buf0[PATH_MAX + 1];
-	char buf1[PATH_MAX + 1];
-
-	char *root_prog = realpath(argv[0], buf0);
-	char *root_file = realpath(argv[2], buf1);
 
 
 	v8gl::Path::setRoot((char*) root_prog, (char*) root_file);
