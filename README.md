@@ -85,13 +85,20 @@ boilerplate, so we are going to build it via:
 
 # Testing
 
-The underlying custom V8 implemenation with OpenGL bindings (short: v8gl)
-also offers an included test suite for debugging purposes.
+## Testing the Game Mode
+
+After you have created a native build, you can test the game mode.
+(it automatically loads the ./game/Main.js and the ./init.js)
 
 ```bash
-	cd /path/to/adk
-	./adk build linux ./external/lycheeJS/game/boilerplate
-	./v8gl/out/v8gl ./v8gl/test/gl/helloworld.js
+	cd out/linux
+	./start
+```
+
+## Testing the API or Bindings
+
+```bash
+	./out/linux/start ./v8gl/test/gl/icosahedron.js
 ```
 
 
