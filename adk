@@ -67,7 +67,7 @@ $0 build <platform> <path> --debug
 	Take a look at the game examples in lycheeJS itself for best practices.
 
 
-Example calls of this script:
+Examples:
 
 $0 setup
 $0 build linux ./external/lycheeJS/game/boilerplate
@@ -191,7 +191,7 @@ build_v8() {
 
 }
 
-# $(build_v8gl x64.release)
+# $(build_v8gl x64.release V8ADK)
 build_v8gl() {
 
 	echo -e "\n\n~ ~ ~ build_v8gl() ~ ~ ~\n" >> $ADK_PATH/log;
@@ -202,11 +202,20 @@ build_v8gl() {
 	build_libs=$v8_libs" -lpthread -lglut -lGLU -lGL -lpng";
 	build_srcs="main.cpp v8gl/v8gl.cpp v8gl/path.cpp api/console.cpp api/script.cpp api/text.cpp api/texture.cpp binding/gl/glbind.cpp binding/glu.cpp binding/glut.cpp";
 
+	if [ "$2" == "V8ADK" ]
+	then
+		build_flags="-DV8ADK";
+		build_out="$ADK_PATH/.temp/v8adk";
+	else
+		build_flags="";
+		build_out="$ADK_PATH/.temp/v8gl";
+	fi;
+
 	if [ $DEBUG_MODE -eq 1 ]
 	then
-		build_command="g++ -g -Wall -I$V8_PATH/include $build_srcs -o $ADK_PATH/.temp/v8gl $build_libs";
+		build_command="g++ $build_flags -g -Wall -I$V8_PATH/include $build_srcs -o $build_out $build_libs";
 	else
-		build_command="g++ -Wall -I$V8_PATH/include $build_srcs -o $ADK_PATH/.temp/v8gl $build_libs";
+		build_command="g++ $build_flags -Wall -I$V8_PATH/include $build_srcs -o $build_out $build_libs";
 	fi;
 
 
@@ -464,10 +473,28 @@ case "$1" in
 
 
 		#
+		# BUILD V8ADK
+		#
+
+		echo -e "\nBuilding V8ADK environment runtime... ($V8_PLATFORM)";
+
+		success=$(build_v8gl $V8_PLATFORM "V8ADK");
+
+		if [ "$success" -eq "0" ]
+		then
+			echo -e "done.";
+		else
+			echo -e "failed (exit code: $success).";
+			finish 1 "$success";
+		fi;
+
+
+
+		#
 		# BUILD V8GL
 		#
 
-		echo -e "\nBuilding V8GL... ($V8_PLATFORM)";
+		echo -e "\nBuilding V8GL game runtime... ($V8_PLATFORM)";
 
 		success=$(build_v8gl $V8_PLATFORM);
 

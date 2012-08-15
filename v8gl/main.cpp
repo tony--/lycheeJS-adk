@@ -83,7 +83,7 @@ Examples:\
 			delete rawsource;
 
 			context.Dispose();
-			scope.Close();
+			scope.Close(v8::Null());
 
 			return 0;
 
@@ -107,73 +107,64 @@ Examples:\
 
 int main(int argc, char* argv[]) {
 
-	if (argc == 1) {
+	char buf[PATH_MAX + 1];
+	char *initpath = realpath("./init.js", buf);
+	char *mainpath = realpath("./game/Main.js", buf);
 
-		char buf[PATH_MAX + 1];
-		char *initpath = realpath("./init.js", buf);
-		char *mainpath = realpath("./game/Main.js", buf);
+	if (initpath && mainpath) {
 
-		if (initpath && mainpath) {
-
-			char* _initsource = v8gl::V8GL::read(initpath);
-			char* _mainsource = v8gl::V8GL::read(mainpath);
+		char* _initsource = v8gl::V8GL::read(initpath);
+		char* _mainsource = v8gl::V8GL::read(mainpath);
 
 
-			v8::HandleScope scope;
-			v8::Persistent<v8::Context> context = v8gl::V8GL::initialize(&argc, argv);
+		v8::HandleScope scope;
+		v8::Persistent<v8::Context> context = v8gl::V8GL::initialize(&argc, argv);
 
-			v8gl::V8GL::dispatch(context, (char*) "lycheeJS");
-
-
-			v8::Local<v8::String> initsource = v8::String::New(_initsource);
-			v8::Local<v8::String> mainsource = v8::String::New(_mainsource);
-
-			if (initsource.IsEmpty() || mainsource.IsEmpty()) {
-				v8::ThrowException(v8::String::New("Error reading ./init.js or ./game/Main.js"));
-			} else {
-
-				v8gl::Path::setRoot(argv[0], "./init.js");
-
-				v8gl::V8GL::execute(context, v8::String::New("glut.init()"), v8::String::New("@built-in/main.js"));
+		v8gl::V8GL::dispatch(context, (char*) "lycheeJS");
 
 
-				// Preload game.Main and setup dependencies
-				char *old_path = v8gl::Path::pushRoot(mainpath);
-				v8gl::V8GL::execute(context, mainsource, v8::String::New(mainpath));
-				v8gl::Path::popRoot(old_path);
- 
+		v8::Local<v8::String> initsource = v8::String::New(_initsource);
+		v8::Local<v8::String> mainsource = v8::String::New(_mainsource);
 
-				// Run the init.js
-				old_path = v8gl::Path::pushRoot(initpath);
-				v8gl::V8GL::execute(context, initsource, v8::String::New(initpath));
-				v8gl::Path::popRoot(old_path);
-
-
-				v8gl::V8GL::execute(context, v8::String::New("glut.mainLoop()"), v8::String::New("@built-in/main.js"));
-
-				delete old_path;
-
-			}
-
-
-			delete _initsource;
-			delete _mainsource;
-
-			context.Dispose();
-			scope.Close();
-
-			return 0;
-
+		if (initsource.IsEmpty() || mainsource.IsEmpty()) {
+			v8::ThrowException(v8::String::New("Error reading ./init.js or ./game/Main.js"));
 		} else {
 
-			fprintf(stderr, usage, argv[0]);
-			return 1;
+			v8gl::Path::setRoot(argv[0], (char*) "./init.js");
+
+			v8gl::V8GL::execute(context, v8::String::New("glut.init()"), v8::String::New("@built-in/main.js"));
+
+
+			// Preload game.Main and setup dependencies
+			char *old_path = v8gl::Path::pushRoot(mainpath);
+			v8gl::V8GL::execute(context, mainsource, v8::String::New(mainpath));
+			v8gl::Path::popRoot(old_path);
+
+
+			// Run the init.js
+			old_path = v8gl::Path::pushRoot(initpath);
+			v8gl::V8GL::execute(context, initsource, v8::String::New(initpath));
+			v8gl::Path::popRoot(old_path);
+
+
+			v8gl::V8GL::execute(context, v8::String::New("glut.mainLoop()"), v8::String::New("@built-in/main.js"));
+
+			delete old_path;
 
 		}
 
+
+		delete _initsource;
+		delete _mainsource;
+
+		context.Dispose();
+		scope.Close(v8::Null());
+
+		return 0;
+
 	} else {
 
-		fprintf(stderr, usage, argv[0]);
+		fprintf(stderr, "Error reading ./init.js or ./game/Main.js");
 		return 1;
 
 	}
