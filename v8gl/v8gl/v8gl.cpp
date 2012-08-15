@@ -5,15 +5,17 @@
 
 #include "v8gl.h"
 
-#include "../binding/gl/glbind.h"
-#include "../binding/glu.h"
-#include "../binding/glut.h"
+// These are excluded from V8ADK builds
+#ifndef V8ADK
+	#include "../binding/gl/glbind.h"
+	#include "../binding/glu.h"
+	#include "../binding/glut.h"
+#endif
 
 #include "../api/console.h"
 #include "../api/script.h"
 #include "../api/text.h"
 #include "../api/texture.h"
-#include "../api/timer.h"
 
 
 // Advanced @built-in JavaScript headers
@@ -30,12 +32,13 @@ namespace v8gl {
 
 		v8::Local<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
 
+#ifndef V8ADK
 		// GL/GLU/GLUT Bindings
 		v8::Handle<v8::ObjectTemplate> Gl = GlFactory::createGl();
 		global->Set(v8::String::New("gl"), Gl);
 		global->Set(v8::String::New("glu"), binding::GLU::generate());
 		global->Set(v8::String::New("glut"), binding::GLUT::generate(pargc, argv));
-
+#endif
 
 		// Console API
 		global->Set(v8::String::New("console"), api::Console::generate());
@@ -58,6 +61,10 @@ namespace v8gl {
 
 		v8::Persistent<v8::Context> context = v8::Context::New(NULL, global);
 
+		context->AllowCodeGenerationFromStrings(false);
+
+
+#ifndef V8ADK
 // FIXME: This crap needs to be all removed.
 
 		v8::HandleScope scope;
@@ -66,7 +73,7 @@ namespace v8gl {
 		context->Exit();
 
 // END of removal
-
+#endif
 
 		return context;
 
@@ -75,14 +82,24 @@ namespace v8gl {
 
 	bool V8GL::dispatch(v8::Handle<v8::Context> context, char* what) {
 
-		if (strcmp(what, "export-adk") == 0) {
+		// @built-in Polyfills for BOM/DOM like behaviours
+		execute(context, v8::String::New((char*) jsapi_interval_js), v8::String::New("@built-in/interval.js"));
+		execute(context, v8::String::New((char*) jsapi_timeout_js), v8::String::New("@built-in/timeout.js"));
 
-			execute(context, v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
+		// @built-in lycheeJS libraries for communication between Engine & ADK and/or V8GL
+		execute(context, v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
+		execute(context, v8::String::New((char*) lychee_Builder_js), v8::String::New("@built-in/lychee/Builder.js"));
+		execute(context, v8::String::New((char*) lychee_platform_v8gl_Preloader_js), v8::String::New("@built-in/lychee/platform/v8gl/Preloader.js"));
+
+
+#ifdef V8ADK
+
+		if (strcmp(what, "export-bash") == 0) {
 
 			context->Enter();
 
 			v8::Handle<v8::Object> lychee = context->Global()->Get(v8::String::New("lychee"))->ToObject();
-			lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::handleExportADK)->GetFunction());
+			lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::handleBuildExportBash)->GetFunction());
 
 			context->Exit();
 
@@ -90,44 +107,30 @@ namespace v8gl {
 
 		} else if (strcmp(what, "export-json") == 0) {
 
-			execute(context, v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
-
 			context->Enter();
 
 			v8::Handle<v8::Object> lychee = context->Global()->Get(v8::String::New("lychee"))->ToObject();
-			lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::handleExportJSON)->GetFunction());
+			lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::handleBuildExportJSON)->GetFunction());
 
 			context->Exit();
 
 			return true;
 
-		} else if (strcmp(what, "export-js") == 0) {
-
-			execute(context, v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
+		} else if (strcmp(what, "rewrite") == 0) {
 
 			context->Enter();
 
 			v8::Handle<v8::Object> lychee = context->Global()->Get(v8::String::New("lychee"))->ToObject();
-			lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::handleExportJS)->GetFunction());
+			lychee->Set(v8::String::New("build"), v8::FunctionTemplate::New(V8GL::handleBuildRewrite)->GetFunction());
 
 			context->Exit();
-
-			return true;
-
-		} else if (strcmp(what, "lycheeJS") == 0) {
-
-			// @built-in Polyfills for BOM/DOM like behaviours
-			execute(context, v8::String::New((char*) jsapi_interval_js), v8::String::New("@built-in/interval.js"));
-			execute(context, v8::String::New((char*) jsapi_timeout_js), v8::String::New("@built-in/timeout.js"));
-
-			// @built-in lycheeJS libraries for communication between Engine & ADK and/or V8GL
-			execute(context, v8::String::New((char*) lychee_core_js), v8::String::New("@built-in/lychee/core.js"));
-			execute(context, v8::String::New((char*) lychee_Builder_js), v8::String::New("@built-in/lychee/Builder.js"));
-			execute(context, v8::String::New((char*) lychee_platform_v8gl_Preloader_js), v8::String::New("@built-in/lychee/platform/v8gl/Preloader.js"));
 
 			return true;
 
 		}
+
+#endif
+
 
 		return false;
 
@@ -177,7 +180,10 @@ namespace v8gl {
 	}
 
 
-	v8::Handle<v8::Value> V8GL::handleExportJSON(const v8::Arguments& args) {
+
+#ifdef V8ADK
+
+	v8::Handle<v8::Value> V8GL::handleBuildExportJSON(const v8::Arguments& args) {
 
 		v8::HandleScope scope;
 		v8::Local<v8::Object> self = args.Holder();
@@ -193,11 +199,10 @@ namespace v8gl {
 
 	}
 
-	v8::Handle<v8::Value> V8GL::handleExportJS(const v8::Arguments& args) {
+	v8::Handle<v8::Value> V8GL::handleBuildRewrite(const v8::Arguments& args) {
 
 		v8::HandleScope scope;
-		v8::Local<v8::Object> self = args.Holder();
-		v8::Persistent<v8::Context> context(self->CreationContext());
+		v8::Persistent<v8::Context> context(args.Holder()->CreationContext());
 
 
 		v8::Handle<v8::Object> env = V8GL::execute(context, v8::String::New("lychee.getEnvironment()"), v8::String::New("@runtime"))->ToObject();
@@ -274,7 +279,7 @@ namespace v8gl {
 
 	}
 
-	v8::Handle<v8::Value> V8GL::handleExportADK(const v8::Arguments& args) {
+	v8::Handle<v8::Value> V8GL::handleBuildExportBash(const v8::Arguments& args) {
 
 		const char *code = "\
 			var env = lychee.getEnvironment();\
@@ -290,13 +295,17 @@ namespace v8gl {
 			}\
 		";
 
-		v8::Local<v8::Script> script = v8::Script::Compile(v8::String::New(code), v8::String::New("@runtime"));
 
-		script->Run();
+		v8::HandleScope scope;
+		v8::Persistent<v8::Context> context(args.Holder()->CreationContext());
 
-		return v8::String::New("");
+		v8::Handle<v8::Value> value = V8GL::execute(context, v8::String::New(code), v8::String::New("@runtime"));
+
+		return scope.Close(v8::String::New(""));
 
 	}
+
+#endif
 
 	void V8GL::logException(v8::TryCatch* try_catch) {
 

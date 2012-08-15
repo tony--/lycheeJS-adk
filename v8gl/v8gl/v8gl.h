@@ -17,9 +17,12 @@ namespace v8gl {
 			static bool dispatch(v8::Handle<v8::Context>, char* what);
 
 			static v8::Handle<v8::Value> execute(v8::Handle<v8::Context> context, v8::Handle<v8::String> source, v8::Handle<v8::String> filename);
-			static v8::Handle<v8::Value> handleExportADK(const v8::Arguments& args);
-			static v8::Handle<v8::Value> handleExportJS(const v8::Arguments& args);
-			static v8::Handle<v8::Value> handleExportJSON(const v8::Arguments& args);
+
+#ifdef V8ADK
+			static v8::Handle<v8::Value> handleBuildExportBash(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleBuildExportJSON(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleBuildRewrite(const v8::Arguments& args);
+#endif
 
 			static char* read(char* filename);
 			static void logException(v8::TryCatch* try_catch);
