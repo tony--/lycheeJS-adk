@@ -313,8 +313,11 @@ build_game() {
 
 	cp ./.temp/game_init.js $game_target/init.js;
 	cp ./.temp/v8gl $game_target/start;
-
 	chmod +x $game_target/start;
+
+
+	echo -e "#/!bin/bash\ncd \"\$(dirname \"\$0\")\"; ./start" > $game_target/start.sh;
+	chmod +x $game_target/start.sh;
 
 	cd $ADK_PATH;
 #	rm -rf ".temp";

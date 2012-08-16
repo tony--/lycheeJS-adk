@@ -53,6 +53,7 @@ namespace v8gl {
 		// Navigator API
 		v8::Handle<v8::ObjectTemplate> navigator = v8::ObjectTemplate::New();
 		navigator->Set(v8::String::New("appName"), v8::String::New("V8GL"));
+		navigator->Set(v8::String::New("userAgent"), v8::String::New("V8GL"));
 		navigator->Set(v8::String::New("platform"), v8::String::New("Linux i686"));
 		navigator->Set(v8::String::New("vendor"), v8::String::New("lycheeJS"));
 		navigator->Set(v8::String::New("product"), v8::String::New("v8gl"));
