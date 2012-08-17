@@ -81,18 +81,24 @@ namespace api {
 		}
 
 
-		for (signed a = 0; a < args.Length(); a++) {
+		for (int m = 0; m < consoleMargin; m++) {
+			fprintf(stdout, "\t");
+		}
 
-			for (int m = 0; m < consoleMargin; m++) {
-				fprintf(stdout, "\t");
-			}
+		for (signed a = 0; a < args.Length(); a++) {
 
 			v8::String::Utf8Value value(args[a]);
 			char* message = *value;
 
-			fprintf(stdout, "%s\n", message);
+			fprintf(stdout, "%s", message);
+
+			if (args.Length() > 1 && a < (args.Length() - 1)) {
+				fprintf(stdout, " | ");
+			}
 
 		}
+
+		fprintf(stdout, "\n");
 
 
 		return scope.Close(v8::Undefined());
