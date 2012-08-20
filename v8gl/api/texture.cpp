@@ -50,9 +50,10 @@ namespace api {
 
 
 		v8::Local<v8::ObjectTemplate> instanceTemplate = v8::ObjectTemplate::New();
-		instanceTemplate->SetInternalFieldCount(0);
+		instanceTemplate->SetInternalFieldCount(1);
 
 		instanceTemplate->Set(v8::String::New("load"), v8::FunctionTemplate::New(handleLoad), v8::ReadOnly);
+		instanceTemplate->Set(v8::String::New("generate"), v8::FunctionTemplate::New(handleGenerate), v8::ReadOnly);
 		instanceTemplate->Set(v8::String::New("onload"), v8::FunctionTemplate::New());
 
 		instanceTemplate->Set(v8::String::New("toString"), v8::FunctionTemplate::New(handleToString), v8::ReadOnly);
@@ -83,24 +84,26 @@ namespace api {
 		}
 
 
-		v8::Local<v8::String> property = v8::String::New("id");
+		v8::Local<v8::String> property = v8::String::New("url");
 		if (thisObj->Has(property)) {
 
-			v8::String::Utf8Value value(thisObj->Get(v8::String::New("url")));
+			v8::String::Utf8Value value(thisObj->Get(property));
 			char* url = v8gl::Path::getReal((char*) *value);
 
 			int width;
 			int height;
 
-			GLuint id = api::Texture::load(url, width, height);
-			if (id == TEXTURE_LOAD_ERROR) {
+			png_byte *data = api::Texture::load(url, width, height);
+			if (data == TEXTURE_LOAD_ERROR) {
 
-				thisObj->Set(property, v8::Null(), v8::ReadOnly);
+				thisObj->SetPointerInInternalField(0, (GLvoid*) NULL);
+
 				v8::ThrowException(v8::Exception::Error(v8::String::New("Could not read Texture file.")));
 
 			} else {
 
-				thisObj->Set(property, v8::Integer::New(id), v8::ReadOnly);
+				thisObj->SetPointerInInternalField(0, (GLvoid*) data);
+
 				thisObj->Set(v8::String::New("url"), v8::String::New(url), v8::ReadOnly);
 				thisObj->Set(v8::String::New("width"), v8::Integer::New(width), v8::ReadOnly);
 				thisObj->Set(v8::String::New("height"), v8::Integer::New(height), v8::ReadOnly);
@@ -123,7 +126,38 @@ namespace api {
 
 	}
 
-	GLuint Texture::load(char* filename, int &width, int &height) {
+
+	v8::Handle<v8::Value> Texture::handleGenerate(const v8::Arguments& args) {
+
+		v8::HandleScope scope;
+		v8::Local<v8::Object> thisObj = args.This();
+
+		if (thisObj.IsEmpty()) {
+			return scope.Close(v8::Null());
+		}
+
+
+		v8::Local<v8::String> property = v8::String::New("id");
+		if (thisObj->Has(property)) {
+
+			int width = thisObj->Get(v8::String::New("width"))->IntegerValue();
+			int height = thisObj->Get(v8::String::New("height"))->IntegerValue();
+
+			GLvoid* data = thisObj->GetPointerFromInternalField(0);
+
+			GLuint id = api::Texture::generate(width, height, data);
+
+			// Not read-only to allow re-generation of Textures in different glut windows.
+			thisObj->Set(property, v8::Integer::New(id));
+
+		}
+
+		return scope.Close(v8::Null());
+
+	}
+
+
+	png_byte *Texture::load(char* filename, int &width, int &height) {
 
 		png_byte header[8];
 
@@ -220,18 +254,23 @@ namespace api {
 		png_read_image(png_ptr, row_pointers);
 
 
-		GLuint texture;
-		glGenTextures(1, &texture);
-		glBindTexture(GL_TEXTURE_2D, texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*) image_data);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-
 		png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
-		delete[] image_data;
 		delete[] row_pointers;
 		fclose(fp);
 
+		return image_data;
+
+	}
+
+	GLuint Texture::generate(int width, int height, GLvoid* data) {
+
+		GLuint texture;
+
+		glGenTextures(1, &texture);
+
+		glBindTexture(GL_TEXTURE_2D, texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (int) width, (int) height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*) data);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 		return texture;
 

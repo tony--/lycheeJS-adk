@@ -300,7 +300,7 @@ namespace v8gl {
 		v8::HandleScope scope;
 		v8::Persistent<v8::Context> context(args.Holder()->CreationContext());
 
-		v8::Handle<v8::Value> value = V8GL::execute(context, v8::String::New(code), v8::String::New("@runtime"));
+		V8GL::execute(context, v8::String::New(code), v8::String::New("@runtime"));
 
 		return scope.Close(v8::String::New(""));
 
