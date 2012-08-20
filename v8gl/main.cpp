@@ -135,7 +135,7 @@ int main(int argc, char* argv[]) {
 	v8gl::V8GL::dispatch(context, (char*) "lycheeJS");
 
 	v8gl::V8GL::execute(context, v8::String::New("glut.init()"), v8::String::New("@built-in/main.js"));
-	v8gl::V8GL::execute(context, v8::String::New("glut.createWindow(\"Initialization\");"), v8::String::New("@built-in/main.js"));
+	v8gl::V8GL::execute(context, v8::String::New("glut.createWindow(\"V8GL runtime\");"), v8::String::New("@built-in/main.js"));
 
 	for (int i = 1; i < argc; i++) {
 
