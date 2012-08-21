@@ -22,7 +22,6 @@
  *
  * - 7. from Callback Registration:
  *   > glut.keyboardFunc
- *   > glut.mouseFunc
  *   > glut.motionFunc
  *   > glut.passiveMotionFunc
  *   > glut.visibilityFunc
@@ -480,6 +479,61 @@ namespace binding {
 
 	}
 
+	v8::Handle<v8::Value> GLUT::getLEFT_BUTTON(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
+		return v8::Uint32::New(GLUT_LEFT_BUTTON);
+	}
+
+	v8::Handle<v8::Value> GLUT::getMIDDLE_BUTTON(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
+		return v8::Uint32::New(GLUT_MIDDLE_BUTTON);
+	}
+
+	v8::Handle<v8::Value> GLUT::getRIGHT_BUTTON(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
+		return v8::Uint32::New(GLUT_RIGHT_BUTTON);
+	}
+
+	v8::Handle<v8::Value> GLUT::getUP(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
+		return v8::Uint32::New(GLUT_UP);
+	}
+
+	v8::Handle<v8::Value> GLUT::getDOWN(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
+		return v8::Uint32::New(GLUT_DOWN);
+	}
+
+	v8::Persistent<v8::Function> _glut_mouseFuncCallback;
+
+	void _glut_mouseFunc(int button, int state, int x, int y) {
+
+		v8::HandleScope scope;
+
+		v8::Handle<v8::Value> args[4];
+		args[0] = v8::Integer::New(button);
+		args[1] = v8::Integer::New(state);
+		args[2] = v8::Integer::New(x);
+		args[3] = v8::Integer::New(y);
+
+		v8::Local<v8::Object> callback_scope = _glut_mouseFuncCallback->CreationContext()->Global()->Get(v8::String::NewSymbol("glut"))->ToObject();
+		v8::Local<v8::Value> result = _glut_mouseFuncCallback->Call(callback_scope, 4, args);
+
+		scope.Close(result);
+
+	}
+
+	v8::Handle<v8::Value> GLUT::handleMouseFunc(const v8::Arguments& args) {
+
+		if (args.Length() == 1 && args[0]->IsFunction()) {
+
+			_glut_mouseFuncCallback.Dispose();
+			v8::Handle<v8::Function> callback = v8::Handle<v8::Function>::Cast(args[0]);
+			_glut_mouseFuncCallback = v8::Persistent<v8::Function>::New(callback);
+
+			glutMouseFunc((void (*)(int button, int state, int x, int y)) _glut_mouseFunc);
+
+		}
+
+		return v8::Undefined();
+
+	}
+
 	v8::Handle<v8::Value> GLUT::handleIdleFunc(const v8::Arguments& args) {
 		return v8::Undefined();
 	}
@@ -887,11 +941,17 @@ namespace binding {
 		/*
 		 * Callback Registration
 		 */
-		gluttpl->Set(v8::String::NewSymbol("displayFunc"),        v8::FunctionTemplate::New(GLUT::handleDisplayFunc));
-		gluttpl->Set(v8::String::NewSymbol("overlayDisplayFunc"), v8::FunctionTemplate::New(GLUT::handleOverlayDisplayFunc));
-		gluttpl->Set(v8::String::NewSymbol("reshapeFunc"),        v8::FunctionTemplate::New(GLUT::handleReshapeFunc));
-		gluttpl->Set(v8::String::NewSymbol("idleFunc"),           v8::FunctionTemplate::New(GLUT::handleIdleFunc));
-		gluttpl->Set(v8::String::NewSymbol("timerFunc"),          v8::FunctionTemplate::New(GLUT::handleTimerFunc));
+		gluttpl->Set(v8::String::NewSymbol("displayFunc"),           v8::FunctionTemplate::New(GLUT::handleDisplayFunc));
+		gluttpl->Set(v8::String::NewSymbol("overlayDisplayFunc"),    v8::FunctionTemplate::New(GLUT::handleOverlayDisplayFunc));
+		gluttpl->Set(v8::String::NewSymbol("reshapeFunc"),           v8::FunctionTemplate::New(GLUT::handleReshapeFunc));
+		gluttpl->SetAccessor(v8::String::NewSymbol("LEFT_BUTTON"),   GLUT::getLEFT_BUTTON);
+		gluttpl->SetAccessor(v8::String::NewSymbol("MIDDLE_BUTTON"), GLUT::getMIDDLE_BUTTON);
+		gluttpl->SetAccessor(v8::String::NewSymbol("RIGHT_BUTTON"),  GLUT::getRIGHT_BUTTON);
+		gluttpl->SetAccessor(v8::String::NewSymbol("UP"),            GLUT::getUP);
+		gluttpl->SetAccessor(v8::String::NewSymbol("DOWN"),          GLUT::getDOWN);
+		gluttpl->Set(v8::String::NewSymbol("mouseFunc"),             v8::FunctionTemplate::New(GLUT::handleMouseFunc));
+		gluttpl->Set(v8::String::NewSymbol("idleFunc"),              v8::FunctionTemplate::New(GLUT::handleIdleFunc));
+		gluttpl->Set(v8::String::NewSymbol("timerFunc"),             v8::FunctionTemplate::New(GLUT::handleTimerFunc));
 
 
 		/*
