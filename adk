@@ -87,9 +87,15 @@ clean() {
 
 	if [ -d "./out" ]
 	then
-		rm -rf "./out";
+		rm -rf "./out" 2>&1;
 	fi;
 
+	if [ "$?" -eq "0" ]
+	then
+		echo 0;
+	else
+		echo 1;
+	fi;
 
 }
 
@@ -521,7 +527,7 @@ case "$1" in
 
 		if [ "$success" -eq "0" ]
 		then
-			echo -e "success.";
+			echo -e "done.";
 		else
 			echo -e "failed (exit code: $success).";
 			finish 1 "$success";
@@ -537,14 +543,23 @@ case "$1" in
 
 		while [ "$answer" != "yes" -a "$answer" != "no" ]
 		do
-			echo -n -e "\tWARNING: This will remove all previously done builds. Continue [ yes/no ]? ";
+			echo -n -e "WARNING: This will remove all previous builds in \"./out/\". Continue [ yes/no ]? ";
 			read answer;
 		done;
 
 		if [ "$answer" == "yes" ]
 		then
 
-			echo -e "\n\tCleaning up...";
+			echo -e "\nCleaning up...";
+
+			success=$(clean);
+			if [ "$success" == "0" ]
+			then
+				echo -e "done.";
+			else
+				echo -e "failed (exit code: $success).";
+				finish 1 "$success";
+			fi;
 
 		fi;
 
