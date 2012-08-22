@@ -96,7 +96,7 @@ So, you can build the Jewelz Game via:
 
 If you want to create debug builds, just edit the *init.js* of your
 game and uncomment the ```lychee.debug = true``` line.
-V8GL automatically is now build in debug mode.
+The V8GL runtime will be build in debug mode.
 
 
 ## Step 4: Testing
