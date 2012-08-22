@@ -39,7 +39,7 @@ OpenGL version string: 4.2.11627 Compatibility Profile Context
 # Getting Started
 
 
-## Step 1: Download and Install
+## Step 1: Download
 
 You first need to download and install the required lycheeJS-ADK files,
 therefore you can choose of two methods:
