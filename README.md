@@ -99,9 +99,10 @@ game and uncomment the ```lychee.debug = true``` line. V8GL automatically
 is now build in debug mode.
 
 
-## Step 4: Testing the native build
+## Step 4: Testing
 
-You can start testing the native build via:
+After you followed the instructions of **Step 3** you can now test the
+build via:
 
 ```bash
 	cd ~/Desktop/lycheeJS-adk;
