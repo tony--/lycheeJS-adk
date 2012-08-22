@@ -92,7 +92,7 @@ So, you can build the Jewelz Game via:
 	./adk clean && ./adk build linux ./external/lycheeJS/game/jewelz
 ```
 
-### Creating Debug Builds
+**Debug Builds**
 
 If you want to create debug builds, just move to the *init.js* of your
 game and uncomment the ```lychee.debug = true``` line. V8GL automatically
