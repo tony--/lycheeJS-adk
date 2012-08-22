@@ -54,7 +54,7 @@ $ git clone git://github.com/martensms/lycheeJS-adk.git ~/Desktop/lycheeJS-adk
 [Download the zip file](https://github.com/martensms/lycheeJS-adk/zipball/master)
 and unpack the contents inside the zip files' root folder it to your *~/Desktop/lycheeJS-adk* folder.
 
-(That the adk script is reachable here: *~/Desktop/lycheeJS-adk/adk*)
+(So that the adk script is located at *~/Desktop/lycheeJS-adk/adk*)
 
 
 ## Step 2: Setup the lycheeJS ADK
@@ -69,7 +69,7 @@ will also need to manually install git via *sudo aptitude install git*.
 
 ```bash
 	cd ~/Desktop/lycheeJS-adk
-	chmod +x ./adk
+	chmod +x ./adk; # in case you downloaded the zip file.
 	./adk setup
 ```
 
@@ -94,7 +94,7 @@ So, you can build the Jewelz Game via:
 ### Creating Debug Builds
 
 If you want to create debug builds, just move to the *init.js* of your
-game and uncomment the `lychee.debug = true` line. V8GL automatically
+game and uncomment the ```lychee.debug = true``` line. V8GL automatically
 is now build in debug mode.
 
 
