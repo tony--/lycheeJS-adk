@@ -22,8 +22,7 @@
  *
  * - 7. from Callback Registration:
  *   > glut.keyboardFunc
- *   > glut.motionFunc
- *   > glut.passiveMotionFunc
+ *   > glut.passiveMotionFunc (use lychee.Input, works with Touches & Swipes)
  *   > glut.visibilityFunc
  *   > glut.entryFunc
  *   > glut.specialFunc
@@ -534,6 +533,39 @@ namespace binding {
 
 	}
 
+	v8::Persistent<v8::Function> _glut_motionFuncCallback;
+
+	void _glut_motionFunc(int x, int y) {
+
+		v8::HandleScope scope;
+
+		v8::Handle<v8::Value> args[2];
+		args[0] = v8::Integer::New(x);
+		args[1] = v8::Integer::New(y);
+
+		v8::Local<v8::Object> callback_scope = _glut_motionFuncCallback->CreationContext()->Global()->Get(v8::String::NewSymbol("glut"))->ToObject();
+		v8::Local<v8::Value> result = _glut_motionFuncCallback->Call(callback_scope, 2, args);
+
+		scope.Close(result);
+
+	}
+
+	v8::Handle<v8::Value> GLUT::handleMotionFunc(const v8::Arguments& args) {
+
+		if (args.Length() == 1 && args[0]->IsFunction()) {
+
+			_glut_motionFuncCallback.Dispose();
+			v8::Handle<v8::Function> callback = v8::Handle<v8::Function>::Cast(args[0]);
+			_glut_motionFuncCallback = v8::Persistent<v8::Function>::New(callback);
+
+			glutMotionFunc((void (*)(int x, int y)) _glut_motionFunc);
+
+		}
+
+		return v8::Undefined();
+
+	}
+
 	v8::Handle<v8::Value> GLUT::handleIdleFunc(const v8::Arguments& args) {
 		return v8::Undefined();
 	}
@@ -950,6 +982,7 @@ namespace binding {
 		gluttpl->SetAccessor(v8::String::NewSymbol("UP"),            GLUT::getUP);
 		gluttpl->SetAccessor(v8::String::NewSymbol("DOWN"),          GLUT::getDOWN);
 		gluttpl->Set(v8::String::NewSymbol("mouseFunc"),             v8::FunctionTemplate::New(GLUT::handleMouseFunc));
+		gluttpl->Set(v8::String::NewSymbol("motionFunc"),            v8::FunctionTemplate::New(GLUT::handleMotionFunc));
 		gluttpl->Set(v8::String::NewSymbol("idleFunc"),              v8::FunctionTemplate::New(GLUT::handleIdleFunc));
 		gluttpl->Set(v8::String::NewSymbol("timerFunc"),             v8::FunctionTemplate::New(GLUT::handleTimerFunc));
 
