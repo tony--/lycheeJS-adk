@@ -43,16 +43,18 @@ OpenGL version string: 4.2.11627 Compatibility Profile Context
 
 You first need to install the ADK.
 
-**Method 1: Cloning the git repository:**
+**Method 1: Cloning the git repository**
 
 ```bash
-$ git clone git://github.com/martensms/lycheeJS-adk.git /path/to/adk/
+$ git clone git://github.com/martensms/lycheeJS-adk.git ~/Desktop/lycheeJS-adk
 ```
 
 **Method 2: Downloading via zip file**
 
 [Download the zip file](https://github.com/martensms/lycheeJS-adk/zipball/master)
-and unpack it.
+and unpack the contents inside the zip files' root folder it to your *~/Desktop/lycheeJS-adk* folder.
+
+(That the adk script is reachable here: *~/Desktop/lycheeJS-adk/adk*)
 
 
 ## Step 2: Setup the lycheeJS ADK
@@ -62,43 +64,47 @@ setup your environment and install the dependend libararies, development
 headers and such.
 
 The setup process will require either *apt-get* or *aptitude* being
-installed on your system.
+installed on your system. If you choose to install lycheeJS via git, you
+will also need to manually install git via *sudo aptitude install git*.
 
 ```bash
-	cd /path/to/adk
+	cd ~/Desktop/lycheeJS-adk
+	chmod +x ./adk
 	./adk setup
 ```
 
 
 ## Step 3: Your first native build
 
-If your environment was correctly setup, you can now create native builds.
+You can now start creating native builds.
 
-A simple start point of learning how to develop with lycheeJS is the
-boilerplate, so we are going to build it via:
+The build process itself requires a few minutes at the first time, due to
+building all required V8 libraries and snapshots.
+
+A simple start point of learning how to develop games with lycheeJS is
+to try out the code of the Boilerplate or the Jewelz Game.
+
+So, you can build the Jewelz Game via:
 
 ```bash
-	cd /path/to/adk
-	./adk build linux ./external/lycheeJS/game/boilerplate
+	cd ~/Desktop/lycheeJS-adk
+	./adk clean && ./adk build linux ./external/lycheeJS/game/jewelz
 ```
 
+### Creating Debug Builds
 
-# Testing
+If you want to create debug builds, just move to the *init.js* of your
+game and uncomment the `lychee.debug = true` line. V8GL automatically
+is now build in debug mode.
 
-## Testing the Game Mode
 
-After you have created a native build, you can test the game mode.
-(it automatically loads the ./game/Main.js and the ./init.js)
+## Step 4: Testing the native build
 
-```bash
-	cd out/linux
-	./start
-```
-
-## Testing the API or Bindings
+You can start testing the native build via:
 
 ```bash
-	./out/linux/start ./v8gl/test/gl/icosahedron.js
+	cd ~/Desktop/lycheeJS-adk
+	./out/linux/start.sh
 ```
 
 
