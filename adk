@@ -16,6 +16,7 @@ DEBUG_MODE=0;
 
 ADK_PATH=$(cd "$(dirname "$0")"; pwd);
 V8_PATH=$ADK_PATH/external/v8;
+UNAME_P=$(uname -p);
 
 
 # This is only used in case of issue reporting
@@ -442,8 +443,20 @@ case "$1" in
 
 		if [ "$2" == "all" -o "$2" == "linux" ]
 		then
+
 			GAME_PLATFORM=$2;
-			V8_PLATFORM="x64.release";
+
+			if [ "$UNAME_P" == "x86_64" ]
+			then
+				V8_PLATFORM="x64.release";
+			elif [ "$UNAME_P" == "i686" ]
+			then
+				V8_PLATFORM="ia32.release";
+			else
+				echo -e "No valid architecture detected ($UNAME_P).";
+				exit 1;
+			fi;
+
 		else
 			echo -e "No valid <platform> given.";
 			exit 1;
