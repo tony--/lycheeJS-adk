@@ -1,52 +1,56 @@
 
 (function(global) {
 
-	var texture;
+	var texA, texB;
 
-	var render = function() {
+	var drawSprite = function(texture, x, y) {
 
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		var x1 = x,
+			x2 = x + texture.width,
+			y1 = y,
+			y2 = y + texture.height;
+
+
 		gl.matrixMode(gl.MODELVIEW);
 		gl.loadIdentity();
 
+		gl.color3f(0.5, 0.5, 1.0);
+
 		gl.bindTexture(gl.TEXTURE_2D, texture.id);
+		gl.enable(gl.TEXTURE_2D);
+		gl.begin(gl.QUADS);
 
-		gl.pushAttrib(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-			gl.enable(gl.TEXTURE_2D);
+		gl.texCoord2d(0, 0);
+		gl.vertex2f(x1, y1);
 
-			gl.begin(gl.QUADS);
-			gl.normal3f(0.0, 0.0, 1.0);
-			gl.texCoord2d(1, 1); gl.vertex3f(0.0, 0.0, 0.0);
-			gl.texCoord2d(1, 0); gl.vertex3f(0.0, 1.0, 0.0);
-			gl.texCoord2d(0, 0); gl.vertex3f(1.0, 1.0, 0.0);
-			gl.texCoord2d(0, 1); gl.vertex3f(1.0, 0.0, 0.0);
-			gl.end();
+		gl.texCoord2d(1, 0);
+		gl.vertex2f(x2, y1);
 
-			gl.disable(gl.TEXTURE_2D);
+		gl.texCoord2d(1, 1);
+		gl.vertex2f(x2, y2);
 
-		gl.popAttrib();
+		gl.texCoord2d(0, 1);
+		gl.vertex2f(x1, y2);
 
-		gl.flush();
 
-		glut.swapBuffers();
+		gl.end();
+		gl.disable(gl.TEXTURE_2D);
 
 	};
 
-	var reshape = function(width, height) {
+	var render = function() {
 
-		gl.viewport(0, 0, width, height);
-		gl.matrixMode(gl.PROJECTION);
-		gl.loadIdentity();
+		gl.clearColor(0, 0, 0, 0);
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-		// fov, aspect, near, far
-		glu.perspective(60.0, width / height, 0.0, 1.0)
 
-		glu.lookAt(
-			0,  0, -2, // eye
-			0,  0,  2, // center
-			0,  1,  0  // up
-		);
+		drawSprite(texA, 100, 100);
+		drawSprite(texB, 200, 200);
+
+
+		gl.flush();
+		glut.swapBuffers();
 
 	};
 
@@ -57,23 +61,36 @@
 	glut.createWindow("Texture drawing example");
 
 
-	gl.clearColor(0.0, 0.0, 0.0, 0.0);
-	gl.shadeModel(gl.SMOOTH);
+	gl.matrixMode(gl.PROJECTION);
+	gl.loadIdentity();
+	gl.ortho(0, 640, 480, 0, 0, 1);
+
+	gl.disable(gl.DEPTH_TEST);
 
 
+	texA = new Texture('../asset/texture.png');
+	texB = new Texture('../asset/texture.png');
 
-	texture = new Texture('/var/www/lycheeJS-adk/v8gl/test/asset/texture.png');
+	texA.onload = function() {
 
-	texture.onload = function() {
-
+		texA.generate();
 		console.log('texture loaded: ' + this.id + ' (' + this.width +'x' + this.height + ')');
 
-		glut.displayFunc(render);
-		glut.reshapeFunc(reshape);
+
+		texB.onload = function() {
+
+			texB.generate();
+			console.log('texture loaded: ' + this.id + ' (' + this.width +'x' + this.height + ')');
+
+			glut.displayFunc(render);
+
+		};
+
+		texB.load();
 
 	};
 
-	texture.load();
+	texA.load();
 
 })(this);
 
