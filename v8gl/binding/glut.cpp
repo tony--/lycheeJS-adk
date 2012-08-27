@@ -21,8 +21,7 @@
  * - 6. Menu Management
  *
  * - 7. from Callback Registration:
- *   > glut.keyboardFunc
- *   > glut.passiveMotionFunc (use lychee.Input, works with Touches & Swipes)
+ *   > glut.passiveMotionFunc
  *   > glut.visibilityFunc
  *   > glut.entryFunc
  *   > glut.specialFunc
@@ -478,6 +477,42 @@ namespace binding {
 
 	}
 
+	v8::Persistent<v8::Function> _glut_keyboardFuncCallback;
+
+	void _glut_keyboardFunc(unsigned char key, int x, int y) {
+
+		v8::HandleScope scope;
+
+		const char* keyval = (char*) &key;
+
+		v8::Handle<v8::Value> args[2];
+		args[0] = v8::String::New(keyval);
+		args[1] = v8::Integer::New(x);
+		args[2] = v8::Integer::New(y);
+
+		v8::Local<v8::Object> callback_scope = _glut_keyboardFuncCallback->CreationContext()->Global()->Get(v8::String::NewSymbol("glut"))->ToObject();
+		v8::Local<v8::Value> result = _glut_keyboardFuncCallback->Call(callback_scope, 2, args);
+
+		scope.Close(result);
+
+	}
+
+	v8::Handle<v8::Value> GLUT::handleKeyboardFunc(const v8::Arguments& args) {
+
+		if (args.Length() == 1 && args[0]->IsFunction()) {
+
+			_glut_keyboardFuncCallback.Dispose();
+			v8::Handle<v8::Function> callback = v8::Handle<v8::Function>::Cast(args[0]);
+			_glut_keyboardFuncCallback = v8::Persistent<v8::Function>::New(callback);
+
+			glutKeyboardFunc((void (*)(unsigned char key, int x, int y)) _glut_keyboardFunc);
+
+		}
+
+		return v8::Undefined();
+
+	}
+ 
 	v8::Handle<v8::Value> GLUT::getLEFT_BUTTON(v8::Local<v8::String> property, const v8::AccessorInfo &info) {
 		return v8::Uint32::New(GLUT_LEFT_BUTTON);
 	}
@@ -911,10 +946,10 @@ namespace binding {
 		/*
 		 * Initialization
 		 */
-		gluttpl->Set(v8::String::NewSymbol("init"), v8::FunctionTemplate::New(GLUT::handleInit));
+		gluttpl->Set(v8::String::NewSymbol("init"),               v8::FunctionTemplate::New(GLUT::handleInit));
 		gluttpl->Set(v8::String::NewSymbol("initWindowPosition"), v8::FunctionTemplate::New(GLUT::handleInitWindowPosition));
-		gluttpl->Set(v8::String::NewSymbol("initWindowSize"), v8::FunctionTemplate::New(GLUT::handleInitWindowSize));
-		gluttpl->Set(v8::String::NewSymbol("initDisplayMode"), v8::FunctionTemplate::New(GLUT::handleInitDisplayMode));
+		gluttpl->Set(v8::String::NewSymbol("initWindowSize"),     v8::FunctionTemplate::New(GLUT::handleInitWindowSize));
+		gluttpl->Set(v8::String::NewSymbol("initDisplayMode"),    v8::FunctionTemplate::New(GLUT::handleInitDisplayMode));
 
 		gluttpl->SetAccessor(v8::String::NewSymbol("RGBA"),        GLUT::getRGBA);
 		gluttpl->SetAccessor(v8::String::NewSymbol("RGB"),         GLUT::getRGB);
@@ -941,23 +976,23 @@ namespace binding {
 		/*
 		 * Window Management
 		 */
-		gluttpl->Set(v8::String::NewSymbol("createWindow"), v8::FunctionTemplate::New(GLUT::handleCreateWindow));
+		gluttpl->Set(v8::String::NewSymbol("createWindow"),    v8::FunctionTemplate::New(GLUT::handleCreateWindow));
 		gluttpl->Set(v8::String::NewSymbol("createSubWindow"), v8::FunctionTemplate::New(GLUT::handleCreateSubWindow));
-		gluttpl->Set(v8::String::NewSymbol("setWindow"), v8::FunctionTemplate::New(GLUT::handleSetWindow));
-		gluttpl->Set(v8::String::NewSymbol("getWindow"), v8::FunctionTemplate::New(GLUT::handleGetWindow));
-		gluttpl->Set(v8::String::NewSymbol("destroyWindow"), v8::FunctionTemplate::New(GLUT::handleDestroyWindow));
-		gluttpl->Set(v8::String::NewSymbol("postRedisplay"), v8::FunctionTemplate::New(GLUT::handlePostRedisplay));
-		gluttpl->Set(v8::String::NewSymbol("swapBuffers"), v8::FunctionTemplate::New(GLUT::handleSwapBuffers));
-		gluttpl->Set(v8::String::NewSymbol("positionWindow"), v8::FunctionTemplate::New(GLUT::handlePositionWindow));
-		gluttpl->Set(v8::String::NewSymbol("reshapeWindow"), v8::FunctionTemplate::New(GLUT::handleReshapeWindow));
-		gluttpl->Set(v8::String::NewSymbol("fullScreen"), v8::FunctionTemplate::New(GLUT::handleFullScreen));
-		gluttpl->Set(v8::String::NewSymbol("popWindow"), v8::FunctionTemplate::New(GLUT::handlePopWindow));
-		gluttpl->Set(v8::String::NewSymbol("pushWindow"), v8::FunctionTemplate::New(GLUT::handlePushWindow));
-		gluttpl->Set(v8::String::NewSymbol("showWindow"), v8::FunctionTemplate::New(GLUT::handleShowWindow));
-		gluttpl->Set(v8::String::NewSymbol("hideWindow"), v8::FunctionTemplate::New(GLUT::handleHideWindow));
-		gluttpl->Set(v8::String::NewSymbol("iconifyWindow"), v8::FunctionTemplate::New(GLUT::handleIconifyWindow));
-		gluttpl->Set(v8::String::NewSymbol("setWindowTitle"), v8::FunctionTemplate::New(GLUT::handleSetWindowTitle));
-		gluttpl->Set(v8::String::NewSymbol("setIconTitle"), v8::FunctionTemplate::New(GLUT::handleSetIconTitle));
+		gluttpl->Set(v8::String::NewSymbol("setWindow"),       v8::FunctionTemplate::New(GLUT::handleSetWindow));
+		gluttpl->Set(v8::String::NewSymbol("getWindow"),       v8::FunctionTemplate::New(GLUT::handleGetWindow));
+		gluttpl->Set(v8::String::NewSymbol("destroyWindow"),   v8::FunctionTemplate::New(GLUT::handleDestroyWindow));
+		gluttpl->Set(v8::String::NewSymbol("postRedisplay"),   v8::FunctionTemplate::New(GLUT::handlePostRedisplay));
+		gluttpl->Set(v8::String::NewSymbol("swapBuffers"),     v8::FunctionTemplate::New(GLUT::handleSwapBuffers));
+		gluttpl->Set(v8::String::NewSymbol("positionWindow"),  v8::FunctionTemplate::New(GLUT::handlePositionWindow));
+		gluttpl->Set(v8::String::NewSymbol("reshapeWindow"),   v8::FunctionTemplate::New(GLUT::handleReshapeWindow));
+		gluttpl->Set(v8::String::NewSymbol("fullScreen"),      v8::FunctionTemplate::New(GLUT::handleFullScreen));
+		gluttpl->Set(v8::String::NewSymbol("popWindow"),       v8::FunctionTemplate::New(GLUT::handlePopWindow));
+		gluttpl->Set(v8::String::NewSymbol("pushWindow"),      v8::FunctionTemplate::New(GLUT::handlePushWindow));
+		gluttpl->Set(v8::String::NewSymbol("showWindow"),      v8::FunctionTemplate::New(GLUT::handleShowWindow));
+		gluttpl->Set(v8::String::NewSymbol("hideWindow"),      v8::FunctionTemplate::New(GLUT::handleHideWindow));
+		gluttpl->Set(v8::String::NewSymbol("iconifyWindow"),   v8::FunctionTemplate::New(GLUT::handleIconifyWindow));
+		gluttpl->Set(v8::String::NewSymbol("setWindowTitle"),  v8::FunctionTemplate::New(GLUT::handleSetWindowTitle));
+		gluttpl->Set(v8::String::NewSymbol("setIconTitle"),    v8::FunctionTemplate::New(GLUT::handleSetIconTitle));
 
 
 		/*
@@ -976,6 +1011,7 @@ namespace binding {
 		gluttpl->Set(v8::String::NewSymbol("displayFunc"),           v8::FunctionTemplate::New(GLUT::handleDisplayFunc));
 		gluttpl->Set(v8::String::NewSymbol("overlayDisplayFunc"),    v8::FunctionTemplate::New(GLUT::handleOverlayDisplayFunc));
 		gluttpl->Set(v8::String::NewSymbol("reshapeFunc"),           v8::FunctionTemplate::New(GLUT::handleReshapeFunc));
+		gluttpl->Set(v8::String::NewSymbol("keyboardFunc"),          v8::FunctionTemplate::New(GLUT::handleKeyboardFunc));
 		gluttpl->SetAccessor(v8::String::NewSymbol("LEFT_BUTTON"),   GLUT::getLEFT_BUTTON);
 		gluttpl->SetAccessor(v8::String::NewSymbol("MIDDLE_BUTTON"), GLUT::getMIDDLE_BUTTON);
 		gluttpl->SetAccessor(v8::String::NewSymbol("RIGHT_BUTTON"),  GLUT::getRIGHT_BUTTON);

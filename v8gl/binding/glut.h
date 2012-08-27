@@ -58,6 +58,7 @@ namespace binding {
 			static v8::Handle<v8::Value> handleDisplayFunc(const v8::Arguments& args);
 			static v8::Handle<v8::Value> handleOverlayDisplayFunc(const v8::Arguments& args);
 			static v8::Handle<v8::Value> handleReshapeFunc(const v8::Arguments& args);
+			static v8::Handle<v8::Value> handleKeyboardFunc(const v8::Arguments& args);
 			static v8::Handle<v8::Value> getLEFT_BUTTON(v8::Local<v8::String> property, const v8::AccessorInfo &info);
 			static v8::Handle<v8::Value> getMIDDLE_BUTTON(v8::Local<v8::String> property, const v8::AccessorInfo &info);
 			static v8::Handle<v8::Value> getRIGHT_BUTTON(v8::Local<v8::String> property, const v8::AccessorInfo &info);
