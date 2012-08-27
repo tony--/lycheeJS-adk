@@ -44,7 +44,7 @@
 			console.group('setTimeout callback');
 			console.error("clearTimeout(handle) failed.");
 			console.groupEnd();
-		}, (Math.random() * 1337) | 0);
+		}, _delay);
 
 		console.log("clearTimeout(handle)");
 		clearTimeout(handle);
